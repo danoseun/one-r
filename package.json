@@ -1,0 +1,21 @@
+{
+  "name": "whatsapp-support",
+  "version": "1.0.0",
+  "description": "Support application for handling customer request from WhatsApp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/asbengineering/whatsapp-support-platform.git"
+  },
+  "keywords": [
+    "whatsapp",
+    "integrations",
+    "support"
+  ],
+  "author": "ASB Engineering",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/asbengineering/whatsapp-support-platform#readme"
+}
