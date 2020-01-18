@@ -4,6 +4,8 @@
   "description": "Support application for handling customer request from WhatsApp",
   "main": "index.js",
   "scripts": {
+    "start": "node build/index.js",
+    "start:dev": "nodemon --watch app ./app/index.js --exec babel-node",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
