@@ -1,0 +1,4 @@
+app/index.js
+app/db/*
+
+build/*
