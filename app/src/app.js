@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import bodyParser from 'body-parser'
 import compression from 'compression'
 import express from 'express'
@@ -7,6 +8,35 @@ import auth from './routes/auth'
 import firms from './routes/firms'
 
 const app = express()
+
+if (process.env.NODE_ENV === 'development') {
+  const {encodeUTF8} = require('tweetnacl-util')
+  const MailDev = require('maildev')
+  const proxyMiddleware = require('http-proxy-middleware')
+
+  const smtpHost = process.env.SMTP_HOST
+  const maildev = new MailDev({
+    outgoingHost: smtpHost,
+    outgoingUser: process.env.SMTP_USERNAME,
+    outgoingPass: encodeUTF8(Uint8Array.from(process.env.SMTP_PASSWORD.split(','))),
+    basePathname: '/maildev'
+  })
+
+  maildev.listen((err) => {
+    if (err)
+      console.log('SMTP Server could not start up')
+    else
+      console.log(`SMTP Server is running on port ${process.env.SMTP_PORT}`)
+  })
+
+  // proxy all maildev requests to the maildev app
+  const proxy = proxyMiddleware('/maildev', {
+    target: `http://localhost:${process.env.SMTP_PORT}`,
+    ws: true
+  })
+
+  app.use(proxy)
+}
 
 // Express application configuration
 app.use(bodyParser.json({limit: '5mb'}))
