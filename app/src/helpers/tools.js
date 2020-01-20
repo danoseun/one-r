@@ -1,4 +1,5 @@
 import crypto from 'crypto'
+import moment from 'moment'
 
 import db from '../../db/models'
 
@@ -19,3 +20,15 @@ export const formatRecord = record => record.get({plain: true})
 export const sanitizeUserAttributes = ({id, firstName, email, lastName, role_id, status}) => ({id, firstName, email, lastName, role_id, status})
 
 export const emailDomain = email => email.split('@')[1]
+
+/**
+ * Checks that token was created with 24 hours during account confirmation
+ * @param {String} createdAt - required
+ * @returns {Boolean}
+ */
+export const isConfirmationTokenActive = ({createdAt}) => {
+  if (moment(createdAt).diff(Date.now(), 'days') < 0)
+    return false
+  else
+    return true
+}
