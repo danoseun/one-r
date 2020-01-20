@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 
 import DataService from './DataService'
 import db from '../../db/models'
+import {generateJWTToken} from '../helpers/authTools'
 import {isConfirmed, tokenPayload, isEmailValid, addRoleToUser, formatRecord, sanitizeUserAttributes, emailDomain} from '../helpers/tools'
 
 require('dotenv').config()
@@ -22,14 +23,10 @@ class AuthService {
         if (user && isConfirmed(user)) {
           bcrypt.compare(password, user.password, (err, equal) => {
 
-            if (equal) {
-              return {
-                tokenPayload: tokenPayload(user),
-                user
-              }
-            } else {
+            if (equal)
+              return {token: generateJWTToken(tokenPayload(user)), user}
+            else
               throw new Error(err)
-            }
           })
         } else { throw new Error('Email and/or password is incorrect.') }
       })
