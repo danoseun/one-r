@@ -38,3 +38,9 @@ export const isAdmin = async roleId => {
 
   return role.name === 'admin'
 }
+
+export const isManager = async roleId => {
+  const role = await db.Role.findByPk(roleId)
+
+  return role.name === 'manager'
+}
