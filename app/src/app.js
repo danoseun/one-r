@@ -3,6 +3,8 @@ import compression from 'compression'
 import express from 'express'
 import morgan from 'morgan'
 
+import auth from './routes/auth'
+
 const app = express()
 
 // Express application configuration
@@ -13,6 +15,7 @@ app.use(morgan('tiny'))
 app.disable('x-powered-by')
 
 // API routes here
+app.use('/api/auth', auth)
 
 // Setup catch-all API catch-all route
 app.get('*', (req, res) => res.status(200).send({
