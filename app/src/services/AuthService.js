@@ -56,7 +56,7 @@ class AuthService {
         else
           throw new Error('Something went wrong when trying to sign you up.')
 
-        return this.data.create(user).then(([newUser]) => {
+        return this.data.create({...user, firm_id: config.firm_id}).then(([newUser]) => {
           if (!roleName)
             this.createTokeAndSendEmail(newUser)
 
@@ -101,7 +101,7 @@ class AuthService {
                 return this.confirmUser(user)
               }).then(updatedUser => ({
                 token: generateJWTToken(tokenPayload(formatRecord(updatedUser))),
-                user: updatedUser
+                user: sanitizeUserAttributes(updatedUser)
               }))
           } else {
             token.destroy()
