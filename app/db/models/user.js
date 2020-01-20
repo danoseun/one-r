@@ -39,6 +39,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     })
     User.belongsTo(models.Firm, {foreignKey: 'firm_id'})
+    User.hasMany(models.Token, {foreignKey: 'user_id'})
   };
   return User;
 };
