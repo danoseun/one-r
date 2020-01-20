@@ -4,6 +4,7 @@ import express from 'express'
 import morgan from 'morgan'
 
 import auth from './routes/auth'
+import firms from './routes/firms'
 
 const app = express()
 
@@ -16,6 +17,7 @@ app.disable('x-powered-by')
 
 // API routes here
 app.use('/api/auth', auth)
+app.use('/api/firms', firms)
 
 // Setup catch-all API catch-all route
 app.get('*', (req, res) => res.status(200).send({
