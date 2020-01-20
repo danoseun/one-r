@@ -28,14 +28,13 @@ class AuthService {
     const {email, password} = credentials
 
     if (email) {
-      return this.data.show({email}, this.options).then(user => {
+      return this.data.show({email}).then(user => {
         if (user && isConfirmed(user)) {
-          bcrypt.compare(password, user.password, (err, equal) => {
-
-            if (equal)
-              return {token: generateJWTToken(tokenPayload(user)), user}
+          return bcrypt.compare(password, user.password).then(response => {
+            if (response)
+              return {token: generateJWTToken(tokenPayload(formatRecord(user))), user: sanitizeUserAttributes(formatRecord(user))}
             else
-              throw new Error(err)
+              throw new Error('Email and/or password is incorrect.')
           })
         } else { throw new Error('Email and/or password is incorrect.') }
       })
@@ -46,7 +45,7 @@ class AuthService {
     const {email, firstName, lastName, password} = payload
 
     if (isEmailValid(email)) {
-      return this.firmConfig.show({where: {domain: emailDomain(email)}}).then(async config => {
+      return this.firmConfig.show({domain: emailDomain(email)}).then(async config => {
         const createPayload = {email, firstName, lastName, password}
         let user
 
@@ -57,7 +56,7 @@ class AuthService {
         else
           throw new Error('Something went wrong when trying to sign you up.')
 
-        return this.data.create(user).then(newUser => {
+        return this.data.create(user).then(([newUser]) => {
           if (!roleName)
             this.createTokeAndSendEmail(newUser)
 
@@ -96,13 +95,20 @@ class AuthService {
         if (token) {
           if (isConfirmationTokenActive(token)) {
             return token.getUser()
-              .then(user => this.confirmUser(user))
-              .then(updatedUser => ({
+              .then(user => {
+                token.destroy()
+
+                return this.confirmUser(user)
+              }).then(updatedUser => ({
                 token: generateJWTToken(tokenPayload(formatRecord(updatedUser))),
                 user: updatedUser
               }))
-          } else { return token.destroy() }
-        } else { throw new Error('Invalid token.')}
+          } else {
+            token.destroy()
+
+            throw new Error('Expired token.')
+          }
+        } else { throw new Error('Invalid token.') }
       })
     }
   }

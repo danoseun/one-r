@@ -8,4 +8,10 @@ const auth = express.Router()
 auth.route('/sign-in')
   .post(authController.signIn)
 
+auth.route('/sign-up')
+  .post(authController.signUp)
+
+auth.route('/confirm')
+  .post(authController.confirmation)
+
 export default auth
