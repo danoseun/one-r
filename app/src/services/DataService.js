@@ -58,6 +58,8 @@ class DataService {
   destroy(resourceIdentifier) {
     return this.show(resourceIdentifier).then(resource => resource.destroy())
   }
+
+  addResource(resource) { return this.model.create(resource) }
 }
 
 export default DataService
