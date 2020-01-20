@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
   Firm.associate = function(models) {
     // associations can be defined here
     Firm.hasMany(models.User, {foreignKey: 'firm_id'})
+    Firm.hasOne(models.FirmConfig, {foreignKey: 'firm_id'})
   };
   return Firm;
 };
