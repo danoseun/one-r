@@ -1,9 +1,9 @@
 import * as Promise from 'bluebird'
 
-import db from '../../db/models'
-import FirmService from '../services/FirmService'
+import db from '../../../db/models'
+import FirmService from '../../services/FirmService'
 
-import {OK, UNPROCESSABLE_ENTITY, CREATED} from '../constants/statusCodes'
+import {OK, UNPROCESSABLE_ENTITY, CREATED} from '../../constants/statusCodes'
 
 const data = new FirmService(db.Firm)
 
