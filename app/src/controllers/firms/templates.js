@@ -18,6 +18,17 @@ const template = {
   index: (req, res) => {
     const data = templateData(req.decoded)
 
+    Promise.try(() => data.tenplates())
+      .then(templates => res.status(OK).send({data: templates, message: null, success: true}))
+      .catch(() => res.status(UNPROCESSABLE_ENTITY).send({
+        data: null,
+        message: 'Unable to complete your request at the moment, please confirm that you do not have missing required fields.',
+        success: false
+      }))
+  },
+  show: (req, res) => {
+    const data = templateData(req.decoded)
+
     Promise.try(() => data.fetchTemplate(req.params.id))
       .then(response => res.status(OK).send({data: response, message: null, success: true}))
       .catch((err) => {

@@ -28,6 +28,7 @@ class TemplateService extends DataService {
         throw new Error('Current User cannot view this template.')
     })
   }
+  tenplates() { return this.index({where: {firm_id: this.currentUser.firm_id}}) }
 }
 
 export default TemplateService
