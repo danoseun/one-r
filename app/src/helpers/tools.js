@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import moment from 'moment'
 
 import db from '../../db/models'
+import TemplateService from '../services/TemplateService'
 
 export const dateToISOString = date => (new Date(date)).toISOString()
 
@@ -44,3 +45,5 @@ export const isManager = async roleId => {
 
   return role.name === 'manager'
 }
+
+export const templateData = user => (new TemplateService(db.Template, user))
