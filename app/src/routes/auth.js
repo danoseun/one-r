@@ -11,6 +11,9 @@ auth.route('/sign-in')
 auth.route('/sign-up')
   .post(authController.signUp)
 
+auth.route('/sign-out')
+  .post(authController.logout)
+
 auth.route('/confirm')
   .post(authController.confirmation)
 

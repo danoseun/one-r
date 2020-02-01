@@ -58,7 +58,7 @@ class AuthService {
 
         return this.data.create({...user, firm_id: config.firm_id}).then(([newUser]) => {
           if (!roleName)
-            this.createTokeAndSendEmail(newUser)
+            this.createTokenAndSendEmail(newUser)
 
           return sanitizeUserAttributes(formatRecord(newUser))
         })
@@ -70,7 +70,7 @@ class AuthService {
    * @todo send email after creating token
    * @param {*} user - create user record
    */
-  createTokeAndSendEmail(user) {
+  createTokenAndSendEmail(user) {
     return user.createToken().then(token => {
       console.log('-'.repeat(80))
       console.log(token.value)

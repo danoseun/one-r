@@ -2,7 +2,8 @@ import * as Promise from 'bluebird'
 
 import AuthService from '../../services/AuthService'
 import {secureRandom} from '../../helpers/tools'
-import {setToRedis} from '../../helpers/redis'
+import {setToRedis, removeFromRedis} from '../../helpers/redis'
+import {getRedisKey} from '../../helpers/authTools'
 
 import {OK, UNPROCESSABLE_ENTITY, UNAUTHORIZED, CREATED} from '../../constants/statusCodes'
 
@@ -45,6 +46,17 @@ const auth = {
         else
           res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to confirm your account', success: false})
       })
+  },
+  logout: (req, res) => {
+    try {
+      const redisKey = getRedisKey(req.headers.authorization)
+
+      removeFromRedis(redisKey)
+
+      res.status(202).send({data: null, message: 'Logout processed successfully', success: true})
+    } catch (err) {
+      res.status(202).send({data: null, message: 'Logout processed successfully', success: true})
+    }
   }
 }
 

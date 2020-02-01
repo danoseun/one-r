@@ -18,3 +18,5 @@ export const getFromRedis = key => new Promise((resolve, reject) => {
     reject('Key is missing')
   }
 })
+
+export const removeFromRedis = key => redisClient().del(key)
