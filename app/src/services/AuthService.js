@@ -43,6 +43,12 @@ class AuthService {
     } else { throw new Error('Cannot login without email.') }
   }
 
+  /**
+   * @todo Only create token when account is newly created
+   * @param {Object} payload - New User record
+   * @param {String} roleName -  New User role
+   * @returns {Promise<Object>}
+   */
   signUp(payload, roleName) {
     const {email, firstName, lastName, password} = payload
 
