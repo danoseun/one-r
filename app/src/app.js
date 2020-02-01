@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import bodyParser from 'body-parser'
 import compression from 'compression'
+import cors from 'cors'
 import express from 'express'
 import morgan from 'morgan'
 
@@ -44,6 +45,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(compression())
 app.use(morgan('tiny'))
 app.disable('x-powered-by')
+app.use(cors({origin: process.env.WEB_HOST, optionsSuccessStatus: 200}))
 
 // API routes here
 app.use('/api/auth', auth)
