@@ -47,3 +47,9 @@ export const isManager = async roleId => {
 }
 
 export const templateData = user => (new TemplateService(db.Template, user))
+
+export const isLoginAllowed = user => {
+  const blockedLoginStatus = ['pending', 'disabled']
+
+  return !blockedLoginStatus.includes(user.status)
+}

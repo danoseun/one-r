@@ -5,7 +5,7 @@ import {secureRandom} from '../../helpers/tools'
 import {setToRedis, removeFromRedis} from '../../helpers/redis'
 import {getRedisKey} from '../../helpers/authTools'
 
-import {OK, UNPROCESSABLE_ENTITY, UNAUTHORIZED, CREATED} from '../../constants/statusCodes'
+import {OK, UNPROCESSABLE_ENTITY, UNAUTHORIZED, CREATED, ACCEPTED} from '../../constants/statusCodes'
 
 const authentication = new AuthService()
 
@@ -53,10 +53,19 @@ const auth = {
 
       removeFromRedis(redisKey)
 
-      res.status(202).send({data: null, message: 'Logout processed successfully', success: true})
+      res.status(ACCEPTED).send({data: null, message: 'Logout processed successfully', success: true})
     } catch (err) {
-      res.status(202).send({data: null, message: 'Logout processed successfully', success: true})
+      res.status(ACCEPTED).send({data: null, message: 'Logout processed successfully', success: true})
     }
+  },
+  invite: (req, res) => {
+    Promise.try(() => authentication.inviteUser({...req.body, firm_id: req.decoded.firm_id}))
+      .then(data => res.status(CREATED).send({data, message: 'Agent invited', success: true}))
+      .catch(() => res.status(UNPROCESSABLE_ENTITY).send({
+        data: null,
+        message: 'Oops! Something went wrong while adding agent',
+        success: false
+      }))
   }
 }
 

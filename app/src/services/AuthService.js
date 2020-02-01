@@ -5,14 +5,14 @@ import DataService from './DataService'
 import db from '../../db/models'
 import {generateJWTToken} from '../helpers/authTools'
 import {
-  isConfirmed,
   tokenPayload,
   isEmailValid,
   addRoleToUser,
   formatRecord,
   sanitizeUserAttributes,
   emailDomain,
-  isConfirmationTokenActive
+  isConfirmationTokenActive,
+  isLoginAllowed
 } from '../helpers/tools'
 
 require('dotenv').config()
@@ -29,7 +29,7 @@ class AuthService {
 
     if (email) {
       return this.data.show({email}).then(user => {
-        if (user && isConfirmed(user)) {
+        if (user && isLoginAllowed(user)) {
           return bcrypt.compare(password, user.password).then(response => {
             if (response)
               return {token: generateJWTToken(tokenPayload(formatRecord(user))), user: sanitizeUserAttributes(formatRecord(user))}
@@ -114,6 +114,16 @@ class AuthService {
   }
 
   confirmUser(user) { return user.update({status: 'confirmed'}) }
+
+  async inviteUser(payload) {
+    const userData = await addRoleToUser(payload, 'agent')
+
+    return this.data.addResource(userData).then(user => {
+      this.createTokenAndSendEmail(user)
+
+      return sanitizeUserAttributes(formatRecord(user))
+    })
+  }
 }
 
 export default AuthService

@@ -2,6 +2,7 @@
 import express from 'express'
 
 import authController from '../controllers/auth/auth'
+import permissions from '../middlewares/permissions'
 
 const auth = express.Router()
 
@@ -16,5 +17,8 @@ auth.route('/sign-out')
 
 auth.route('/confirm')
   .post(authController.confirmation)
+
+auth.route('/invite-agents')
+  .post(permissions.isManager, authController.invite)
 
 export default auth
