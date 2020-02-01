@@ -46,6 +46,20 @@ const permissions = {
         res.status(UNAUTHORIZED).send({data: null, message: 'Current user is unauthorized', success: false})
       }
     } catch(err) { res.status(UNAUTHORIZED).send({data: null, message: 'Current user is unauthorized', success: false}) }
+  },
+  isFirmManager: async (req, res, next) => {
+    try {
+      const jwtToken = await getFromRedis(getRedisKey(req.headers.authorization))
+      const user = decodeJWTToken(jwtToken)
+
+      if (user && await isManager(user.role_id) && user.firm_id === req.params.id) {
+        req.decoded = user
+
+        next()
+      } else {
+        res.status(UNAUTHORIZED).send({data: null, message: 'Current user is unauthorized', success: false})
+      }
+    } catch(err) { res.status(UNAUTHORIZED).send({data: null, message: 'Current user is unauthorized', success: false}) }
   }
 }
 

@@ -19,4 +19,7 @@ firms.route('/templates/:id')
   .patch(permissions.isManager, tempalateController.update)
   .get(permissions.isAuthenticated, tempalateController.show)
 
+firms.route('/:id/agents')
+  .get(permissions.isFirmManager, firmsController.fetchAgents)
+
 export default firms
