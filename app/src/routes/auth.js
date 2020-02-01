@@ -21,4 +21,7 @@ auth.route('/confirm')
 auth.route('/invite-agents')
   .post(permissions.isManager, authController.invite)
 
+auth.route('/remove-agents/:id')
+  .delete(permissions.isManager, authController.remove)
+
 export default auth

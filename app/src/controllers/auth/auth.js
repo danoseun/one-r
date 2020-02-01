@@ -1,7 +1,8 @@
 import * as Promise from 'bluebird'
 
 import AuthService from '../../services/AuthService'
-import {secureRandom} from '../../helpers/tools'
+import FirmService from '../../services/FirmService'
+import {secureRandom, sanitizeUserAttributes, formatRecord} from '../../helpers/tools'
 import {setToRedis, removeFromRedis} from '../../helpers/redis'
 import {getRedisKey} from '../../helpers/authTools'
 
@@ -66,6 +67,18 @@ const auth = {
         message: 'Oops! Something went wrong while adding agent',
         success: false
       }))
+  },
+  remove: (req, res) => {
+    const data = new FirmService(null, req.decoded)
+
+    Promise.try(() => data.disableFirmUser(req.params))
+      .then(data => res.status(ACCEPTED).send({data: sanitizeUserAttributes(formatRecord(data)), message: 'Agent removed', success: true}))
+      .catch(err => {
+        if (err.message === 'Cannot remove user that are not in your firm.')
+          res.status(UNAUTHORIZED).send({data: null, message: err.message, success: false})
+        else
+          res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Uanble to process your request', success: false})
+      })
   }
 }
 
