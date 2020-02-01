@@ -7,6 +7,7 @@ import morgan from 'morgan'
 
 import auth from './routes/auth'
 import firms from './routes/firms'
+import users from './routes/users'
 
 const app = express()
 
@@ -50,6 +51,7 @@ app.use(cors({origin: process.env.WEB_HOST, optionsSuccessStatus: 200}))
 // API routes here
 app.use('/api/auth', auth)
 app.use('/api/firms', firms)
+app.use('/api/users', users)
 
 // Setup catch-all API catch-all route
 app.get('*', (req, res) => res.status(200).send({
