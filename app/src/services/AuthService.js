@@ -56,7 +56,7 @@ class AuthService {
         else
           throw new Error('Something went wrong when trying to sign you up.')
 
-        return this.data.create({...user, firm_id: config.firm_id}).then(([newUser]) => {
+        return this.data.create({...user, firm_id: config && config.firm_id}).then(([newUser]) => {
           if (!roleName)
             this.createTokenAndSendEmail(newUser)
 
