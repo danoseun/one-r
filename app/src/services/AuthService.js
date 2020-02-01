@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import bcrypt from 'bcrypt'
+import base64 from 'base64url'
 
 import DataService from './DataService'
 import db from '../../db/models'
@@ -12,7 +13,8 @@ import {
   sanitizeUserAttributes,
   emailDomain,
   isConfirmationTokenActive,
-  isLoginAllowed
+  isLoginAllowed,
+  secureRandom
 } from '../helpers/tools'
 
 require('dotenv').config()
@@ -71,7 +73,7 @@ class AuthService {
    * @param {*} user - create user record
    */
   createTokenAndSendEmail(user) {
-    return user.createToken().then(token => {
+    return user.createToken({value: base64(secureRandom(4))}).then(token => {
       console.log('-'.repeat(80))
       console.log(token.value)
       console.log('-'.repeat(80))
