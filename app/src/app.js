@@ -46,7 +46,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(compression())
 app.use(morgan('tiny'))
 app.disable('x-powered-by')
-app.use(cors({origin: process.env.WEB_HOST, optionsSuccessStatus: 200}))
+app.use(cors())
 
 // API routes here
 app.use('/api/auth', auth)
