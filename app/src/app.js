@@ -46,6 +46,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(compression())
 app.use(morgan('tiny'))
 app.disable('x-powered-by')
+// use the webhost as the only origin allowed eventually
 app.use(cors())
 
 // API routes here
