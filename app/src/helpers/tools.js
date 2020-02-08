@@ -61,3 +61,9 @@ export const isLoginAllowed = user => {
 
   return !blockedLoginStatus.includes(user.status)
 }
+
+export const addBaseUrlToImages = data => ({
+  ...data,
+  image: `${process.env.CARS_IMAGE_BASE_URL}/${data.image}`,
+  images: data.images.map(image => ({images: `${process.env.CARS_IMAGE_BASE_URL}/${image.images}`}))
+})

@@ -10,6 +10,7 @@ import auth from './routes/auth'
 import channels from './routes/channels'
 import conversations from './routes/conversations'
 import firms from './routes/firms'
+import support from './routes/support'
 import users from './routes/users'
 
 const app = express()
@@ -57,6 +58,9 @@ app.use('/api/conversations', conversations)
 app.use('/api/channels', channels)
 app.use('/api/firms', firms)
 app.use('/api/users', users)
+
+// Ad-hoc endpoints
+app.use('/support', support)
 
 // Server Sent Events
 app.get('/message-stream', sse.sseSetup.init)
