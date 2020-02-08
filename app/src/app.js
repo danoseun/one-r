@@ -7,6 +7,7 @@ import morgan from 'morgan'
 
 import auth from './routes/auth'
 import channels from './routes/channels'
+import conversations from './routes/conversations'
 import firms from './routes/firms'
 import users from './routes/users'
 
@@ -52,6 +53,7 @@ app.use(cors())
 
 // API routes here
 app.use('/api/auth', auth)
+app.use('/api/conversations', conversations)
 app.use('/api/channels', channels)
 app.use('/api/firms', firms)
 app.use('/api/users', users)
