@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'firm_id',
       onDelete: 'CASCADE'
     })
+    Channel.hasMany(models.Conversation, {foreignKey: 'channel_id'})
   };
   return Channel;
 };
