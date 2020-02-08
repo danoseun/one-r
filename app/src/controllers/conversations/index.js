@@ -28,6 +28,11 @@ const conversations = {
     Promise.try(() => conversation.allConversations(req.decoded))
       .then(data => res.status(OK).send({data, message: null, sucess: true}))
       .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to fetch conversations', sucess: false}))
+  },
+  reply: (req, res) => {
+    Promise.try(() => conversation.replyMessage(req.body, req.params.id))
+      .then(data => res.status(OK).send({data, message: 'Message sent to customer', sucess: true}))
+      .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to send message to customer', sucess: true}))
   }
 }
 

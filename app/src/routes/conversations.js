@@ -15,4 +15,7 @@ conversations.route('/channel-messages')
 conversations.route('/')
   .get(permissions.isAuthenticated, conversationController.index)
 
+conversations.route('/:id')
+  .post(permissions.isAuthenticated, conversationController.reply)
+
 export default conversations
