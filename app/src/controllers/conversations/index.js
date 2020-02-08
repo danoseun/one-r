@@ -4,6 +4,7 @@ import ConversationService from '../../services/ConversationService'
 import db from '../../../db/models'
 import {formatIncomingMessage} from '../../helpers/conversationTools'
 import {CREATED, UNPROCESSABLE_ENTITY, OK} from '../../constants/statusCodes'
+import sse from '../../helpers/serverSentEvent'
 
 const conversation = new ConversationService(db.Conversation)
 
@@ -13,8 +14,11 @@ const conversations = {
    */
   webhook: (req, res) => {
     Promise.try(() => conversation.incomingMessage(formatIncomingMessage(req.body)))
-      .then(() => res.status(CREATED).send({data: null, message: 'Incoming message received', sucess: true}))
-      .catch(() => res.status(CREATED).send({data: null, message: 'Incoming message received', sucess: true}))
+      .then(data => {
+        sse.sseSetup.send(data, 'message', Date.now())
+
+        res.status(CREATED).send({data, message: 'Incoming message received', sucess: true})
+      }).catch(() => res.status(CREATED).send({data: null, message: 'Incoming message received', sucess: true}))
   },
   /**
    * @todo Wire up API calls to deliver message to customer

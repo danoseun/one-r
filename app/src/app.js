@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 import bodyParser from 'body-parser'
-import compression from 'compression'
 import cors from 'cors'
 import express from 'express'
 import morgan from 'morgan'
+
+import sse from './helpers/serverSentEvent'
 
 import auth from './routes/auth'
 import channels from './routes/channels'
@@ -45,7 +46,6 @@ if (process.env.NODE_ENV === 'development') {
 // Express application configuration
 app.use(bodyParser.json({limit: '5mb'}))
 app.use(bodyParser.urlencoded({extended: false}))
-app.use(compression())
 app.use(morgan('tiny'))
 app.disable('x-powered-by')
 // use the webhost as the only origin allowed eventually
@@ -57,6 +57,9 @@ app.use('/api/conversations', conversations)
 app.use('/api/channels', channels)
 app.use('/api/firms', firms)
 app.use('/api/users', users)
+
+// Server Sent Events
+app.get('/message-stream', sse.sseSetup.init)
 
 // Setup catch-all API catch-all route
 app.get('*', (req, res) => res.status(200).send({
