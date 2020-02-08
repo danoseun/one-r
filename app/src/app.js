@@ -6,6 +6,7 @@ import express from 'express'
 import morgan from 'morgan'
 
 import auth from './routes/auth'
+import channels from './routes/channels'
 import firms from './routes/firms'
 import users from './routes/users'
 
@@ -51,6 +52,7 @@ app.use(cors())
 
 // API routes here
 app.use('/api/auth', auth)
+app.use('/api/channels', channels)
 app.use('/api/firms', firms)
 app.use('/api/users', users)
 
