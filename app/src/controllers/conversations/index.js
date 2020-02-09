@@ -17,7 +17,7 @@ const conversations = {
       .then(data => {
         sse.sseSetup.send(data, 'message', Date.now())
 
-        res.status(CREATED).send({data, message: 'Incoming message received', success: true})
+        res.status(CREATED).send({data: null, message: 'Incoming message received', success: true})
       }).catch(() => res.status(CREATED).send({data: null, message: 'Incoming message received', success: true}))
   },
   /**

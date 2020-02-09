@@ -7,3 +7,34 @@ export const constructNewMessage = (message, support = false) => ({
   content: message.message.text,
   contentType: message.message.type
 })
+
+export const constructTemplatePayload = ({phoneNumber, locale, name, namespace, values}) => ({
+  scenarioKey: process.env.INFOBIP_SCENARIO_KEY,
+  destinations: [
+    {
+      to: {
+        phoneNumber: phoneNumber
+      }
+    }
+  ],
+  whatsApp: {
+    templateName: name,
+    templateNamespace: namespace,
+    templateData: values,
+    language: locale
+  }
+})
+
+export const mediaObject = ({imageUrl, videoUrl}) => {
+  if (imageUrl)
+    return {imageUrl}
+  else if (videoUrl)
+    return {videoUrl}
+
+  return {}
+}
+
+export const constructFreeFormPayload = ({phoneNumber, content, imageUrl, videoUrl}) => ({
+  ...constructTemplatePayload({phoneNumber}),
+  whatsApp: {...mediaObject({imageUrl, videoUrl}), text: content}
+})
