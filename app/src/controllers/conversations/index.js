@@ -17,26 +17,26 @@ const conversations = {
       .then(data => {
         sse.sseSetup.send(data, 'message', Date.now())
 
-        res.status(CREATED).send({data, message: 'Incoming message received', sucess: true})
-      }).catch(() => res.status(CREATED).send({data: null, message: 'Incoming message received', sucess: true}))
+        res.status(CREATED).send({data, message: 'Incoming message received', success: true})
+      }).catch(() => res.status(CREATED).send({data: null, message: 'Incoming message received', success: true}))
   },
   /**
    * @todo Wire up API calls to deliver message to customer
    */
   create: (req, res) => {
     Promise.try(() => conversation.channelMessage(req.body))
-      .then(data => res.status(CREATED).send({data, message: 'Message sent', sucess: true}))
-      .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to send message to customer', sucess: true}))
+      .then(data => res.status(CREATED).send({data, message: 'Message sent', success: true}))
+      .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to send message to customer', success: true}))
   },
   index: (req, res) => {
     Promise.try(() => conversation.allConversations(req.decoded))
-      .then(data => res.status(OK).send({data, message: null, sucess: true}))
-      .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to fetch conversations', sucess: false}))
+      .then(data => res.status(OK).send({data, message: null, success: true}))
+      .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to fetch conversations', success: false}))
   },
   reply: (req, res) => {
     Promise.try(() => conversation.replyMessage(req.body, req.params.id))
-      .then(data => res.status(OK).send({data, message: 'Message sent to customer', sucess: true}))
-      .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to send message to customer', sucess: true}))
+      .then(data => res.status(OK).send({data, message: 'Message sent to customer', success: true}))
+      .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to send message to customer', success: true}))
   }
 }
 

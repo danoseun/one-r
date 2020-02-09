@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       unique: true
     },
-    description: DataTypes.TEXT
+    description: DataTypes.TEXT,
+    name: DataTypes.STRING
   }, {});
   Channel.associate = function(models) {
     // associations can be defined here
