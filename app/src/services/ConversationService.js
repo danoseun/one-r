@@ -49,12 +49,20 @@ class ConversationService extends DataService {
     return this.channel.show({phone: payload.from})
       .then(channel => this.addResource({
         customer: {
-          phone: payload.to,
+          phone: payload.template.infobip.phoneNumber,
           lastActivity: (new Date(Date.now()).toISOString())
         },
         channel_id: channel.id,
         firm_id: channel.firm_id
-      })).then(conversation => this.createMessage(conversation, payload.message))
+      })).then(conversation => {
+        axios.post(
+          `${process.env.INFOBIP_BASE_URL}/omni/1/advanced`,
+          constructTemplatePayload(payload.template.infobip),
+          {headers: {authorization: `Basic ${process.env.INFOBIP_API_KEY}`}}
+        )
+
+        return this.createMessage(conversation, payload.template.formatted, true)
+      })
   }
 
   replyMessage(payload, conversationId) {
