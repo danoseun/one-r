@@ -1,3 +1,4 @@
+import {Op} from 'sequelize'
 import DataService from './DataService'
 import db from '../../db/models'
 import {constructNewConversation, constructNewMessage} from '../helpers/conversationTools'
@@ -10,7 +11,7 @@ class ConversationService extends DataService {
   }
 
   incomingMessage(payload) {
-    return this.show({customer: {phone: {$eq: payload.from}}}).then(conversation => {
+    return this.show({customer: {phone: {[Op.eq]: payload.from}}}).then(conversation => {
       const newMessage = constructNewMessage(payload)
 
       if (conversation)
