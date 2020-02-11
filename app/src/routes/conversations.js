@@ -17,5 +17,6 @@ conversations.route('/')
 
 conversations.route('/:id')
   .post(permissions.isAuthenticated, conversationController.reply)
+  .patch(permissions.isAuthenticated, conversationController.update)
 
 export default conversations
