@@ -8,11 +8,15 @@ module.exports = (sequelize, DataTypes) => {
     },
     phone: {
       allowNull: false,
-      type: DataTypes.BIGINT,
-      unique: true
+      type: DataTypes.BIGINT
     },
     description: DataTypes.TEXT,
-    name: DataTypes.STRING
+    name: DataTypes.STRING,
+    type: {
+      allowNull: false,
+      type: DataTypes.ENUM('DEFAULT', 'CUSTOM'),
+      defaultValue: 'DEFAULT'
+    }
   }, {});
   Channel.associate = function(models) {
     // associations can be defined here
