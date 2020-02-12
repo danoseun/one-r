@@ -27,10 +27,10 @@ class DataService {
    * @param {Object} resourceIdentifier - required
    * @returns {Promise}
    */
-  show(resourceIdentifier, options = {}) {
-    const column = Object.keys(resourceIdentifier)[0]
+  show(resourceIdentifier, options = {}, additionalClause = {}) {
+    const [column] = Object.keys(resourceIdentifier)
 
-    return this.model.findOne({where: {[column]: resourceIdentifier[column]}, ...options})
+    return this.model.findOne({where: {[column]: resourceIdentifier[column], ...additionalClause}, ...options})
   }
 
   /**

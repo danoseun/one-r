@@ -40,7 +40,7 @@ class ConversationService extends DataService {
   }
 
   handleNewConversation(payload, formattedMessage) {
-    return this.channel.show({phone: payload.to})
+    return this.channel.show({phone: payload.to}, {}, {[Op.and]: [{type: 'DEFAULT'}]})
       .then(channel => this.addResource({...constructNewConversation(payload), channel_id: channel.id, firm_id: channel.firm_id}))
       .then(conversation => this.createMessage(conversation, formattedMessage, true))
   }
