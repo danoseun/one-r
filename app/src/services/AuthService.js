@@ -85,41 +85,31 @@ class AuthService {
   }
 
   confirmAccount(payload) {
-    const {email = ''} = payload
+    const {token, ...rest} = payload
+    const tokenObject = new DataService(db.Token)
 
-    if (email) {
-      // Check that admin knows the project secret before confirming their account
-      if (payload.token === process.env.SECRET) {
-        return this.data.show({email})
-          .then(user => this.confirmUser(user))
-          .then(updatedUser => ({token: generateJWTToken(tokenPayload(updatedUser)), user: updatedUser}))
-      } else { throw new Error('Unable to confirm account') }
-    } else {
-      const tokenObject = new DataService(db.Token)
+    return tokenObject.show({value: token}).then(data => {
+      if (data) {
+        if (isConfirmationTokenActive(data)) {
+          return data.getUser()
+            .then(user => {
+              data.destroy()
 
-      return tokenObject.show({value: payload.token}).then(token => {
-        if (token) {
-          if (isConfirmationTokenActive(token)) {
-            return token.getUser()
-              .then(user => {
-                token.destroy()
+              return this.confirmUser(user, rest)
+            }).then(updatedUser => ({
+              token: generateJWTToken(tokenPayload(formatRecord(updatedUser))),
+              user: sanitizeUserAttributes(updatedUser)
+            }))
+        } else {
+          data.destroy()
 
-                return this.confirmUser(user)
-              }).then(updatedUser => ({
-                token: generateJWTToken(tokenPayload(formatRecord(updatedUser))),
-                user: sanitizeUserAttributes(updatedUser)
-              }))
-          } else {
-            token.destroy()
-
-            throw new Error('Expired token.')
-          }
-        } else { throw new Error('Invalid token.') }
-      })
-    }
+          throw new Error('Expired token.')
+        }
+      } else { throw new Error('Invalid token.') }
+    })
   }
 
-  confirmUser(user) { return user.update({status: 'confirmed'}) }
+  confirmUser(user, data = {}) { return user.update({...data, status: 'confirmed'}) }
 
   async inviteUser(payload) {
     const userData = await addRoleToUser(payload, 'agent')
