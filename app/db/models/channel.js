@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     type: {
       allowNull: false,
       type: DataTypes.ENUM('DEFAULT', 'CUSTOM'),
-      defaultValue: 'DEFAULT'
+      defaultValue: 'CUSTOM'
     }
   }, {});
   Channel.associate = function(models) {

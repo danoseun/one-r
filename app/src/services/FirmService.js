@@ -1,3 +1,5 @@
+import {Op} from 'sequelize'
+
 import DataService from './DataService'
 import db from '../../db/models'
 
@@ -23,7 +25,7 @@ class FirmService extends DataService {
   }
 
   disableFirmUser({id}) {
-    return db.User.findOne({where: {id, firm_id: this.currentUser.firm_id}}).then(firmUser => {
+    return db.User.findOne({where: {id, [Op.and]: [{firm_id: this.currentUser.firm_id}]}}).then(firmUser => {
       if (firmUser)
         return firmUser.update({status: 'disabled'})
       else
