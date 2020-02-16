@@ -57,10 +57,8 @@ class AuthService {
         const createPayload = {email, firstName, lastName, password}
         let user
 
-        if (config && !roleName)
+        if (config)
           user = await addRoleToUser(createPayload, 'manager')
-        else if(roleName)
-          user = await addRoleToUser(createPayload, roleName)
         else
           throw new Error('Something went wrong when trying to sign you up.')
 
