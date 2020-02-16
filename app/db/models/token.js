@@ -1,6 +1,5 @@
 import base64 from 'base64url'
-
-import {secureRandom} from '../../src/helpers/tools'
+import crypto from 'crypto'
 
 module.exports = (sequelize, DataTypes) => {
   const Token = sequelize.define('Token', {
@@ -12,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     value: {
       allowNull: false,
       type: DataTypes.STRING,
-      defaultValue: base64(secureRandom(4))
+      defaultValue: base64(crypto.randomBytes(4).toString('hex'))
     },
     type: {
       allowNull: false,
