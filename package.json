@@ -7,6 +7,7 @@
     "build": "rm -rf ./build && babel -d ./build ./app -s",
     "start": "node build/index.js",
     "start:dev": "nodemon --watch app ./app/index.js --exec babel-node",
+    "setup": "node build/init/setup.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
