@@ -10,6 +10,7 @@ class ConversationService extends DataService {
     super(model)
 
     this.channel = new DataService(db.Channel)
+    this.authorizationType = process.env.NODE_ENV === 'production' ? 'App' : 'Basic'
   }
 
   incomingMessage(payload) {
@@ -58,7 +59,7 @@ class ConversationService extends DataService {
         axios.post(
           `${process.env.INFOBIP_BASE_URL}/omni/1/advanced`,
           constructTemplatePayload(payload.template.infobip),
-          {headers: {authorization: `Basic ${process.env.INFOBIP_API_KEY}`}}
+          {headers: {authorization: `${this.authorizationType} ${process.env.INFOBIP_API_KEY}`}}
         )
 
         return this.createMessage(conversation, payload.template.formatted, true)
@@ -72,13 +73,13 @@ class ConversationService extends DataService {
       axios.post(
         `${process.env.INFOBIP_BASE_URL}/omni/1/advanced`,
         constructTemplatePayload(payload.template.infobip),
-        {headers: {authorization: `Basic ${process.env.INFOBIP_API_KEY}`}}
+        {headers: {authorization: `${this.authorizationType} ${process.env.INFOBIP_API_KEY}`}}
       )
     } else {
       axios.post(
         `${process.env.INFOBIP_BASE_URL}/omni/1/advanced`,
         constructFreeFormPayload({phoneNumber: payload.phone, ...message}),
-        {headers: {authorization: `Basic ${process.env.INFOBIP_API_KEY}`}}
+        {headers: {authorization: `${this.authorizationType} ${process.env.INFOBIP_API_KEY}`}}
       )
     }
 
