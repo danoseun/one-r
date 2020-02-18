@@ -56,37 +56,34 @@ class ConversationService extends DataService {
         channel_id: channel.id,
         firm_id: channel.firm_id
       })).then(conversation => {
-        axios.post(
-          `${process.env.INFOBIP_BASE_URL}/omni/1/advanced`,
-          constructTemplatePayload(payload.template.infobip),
-          {headers: {authorization: `${this.authorizationType} ${process.env.INFOBIP_API_KEY}`}}
-        )
+        this.conversation = conversation
 
-        return this.createMessage(conversation, payload.template.formatted, true)
+        return this.sendMessageToCustomer(payload.template.infobip, 'template')
+          .then(() => this.createMessage(this.conversation, payload.template.formatted, true))
       })
   }
 
   replyMessage(payload, conversationId) {
     const message = payload.message || payload.template.formatted
+    const customerMessagePayload = payload.template ? payload.template.infobip : {phoneNumber: payload.phone, ...message}
+    const type = payload.template ? 'template' : 'free form'
 
-    if (payload.template) {
-      axios.post(
-        `${process.env.INFOBIP_BASE_URL}/omni/1/advanced`,
-        constructTemplatePayload(payload.template.infobip),
-        {headers: {authorization: `${this.authorizationType} ${process.env.INFOBIP_API_KEY}`}}
-      )
-    } else {
-      axios.post(
-        `${process.env.INFOBIP_BASE_URL}/omni/1/advanced`,
-        constructFreeFormPayload({phoneNumber: payload.phone, ...message}),
-        {headers: {authorization: `${this.authorizationType} ${process.env.INFOBIP_API_KEY}`}}
-      )
-    }
+    return this.sendMessageToCustomer(customerMessagePayload, type)
+      .then(() => this.show({id: conversationId}).then(conversation => this.createMessage(conversation, message)))
 
-    return this.show({id: conversationId}).then(conversation => this.createMessage(conversation, message))
   }
 
   allConversations(currentUser) { return this.index({where: {firm_id: currentUser.firm_id}, include: db.Message}) }
+
+  sendMessageToCustomer(infobipPayload, type) {
+    const requestPayload = type === 'template' ? constructTemplatePayload(infobipPayload) : constructFreeFormPayload(infobipPayload)
+
+    return axios.post(
+      `${process.env.INFOBIP_BASE_URL}/omni/1/advanced`,
+      requestPayload,
+      {headers: {authorization: `${this.authorizationType} ${process.env.INFOBIP_API_KEY}`}}
+    )
+  }
 }
 
 export default ConversationService
