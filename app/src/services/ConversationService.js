@@ -10,7 +10,7 @@ class ConversationService extends DataService {
     super(model)
 
     this.channel = new DataService(db.Channel)
-    this.authorizationType = process.env.NODE_ENV === 'production' ? 'App' : 'Basic'
+    this.authorizationType = (process.env.NODE_ENV === 'production' && process.env.SERVER_HOST !== process.env.STAGING_URL) ? 'App' : 'Basic'
   }
 
   incomingMessage(payload) {
