@@ -8,7 +8,7 @@ import tempalateController from '../controllers/firms/templates'
 const firms = express.Router()
 
 firms.route('/')
-  .get(firmsController.index)
+  .get(permissions.isAdmin, firmsController.index)
   .post(permissions.isAdmin, firmsController.create)
 
 firms.route('/templates')
