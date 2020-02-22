@@ -3,7 +3,14 @@ import axios from 'axios'
 import {Op} from 'sequelize'
 import DataService from './DataService'
 import db from '../../db/models'
-import {constructTemplatePayload, constructNewMessage, constructNewConversation, constructFreeFormPayload} from '../helpers/conversationTools'
+import {
+  constructTemplatePayload,
+  constructNewMessage,
+  constructNewConversation,
+  constructFreeFormPayload,
+  addMediaUrls
+} from '../helpers/conversationTools'
+import UploadService from './UploadService'
 
 class ConversationService extends DataService {
   constructor(model) {
@@ -11,6 +18,7 @@ class ConversationService extends DataService {
 
     this.channel = new DataService(db.Channel)
     this.authorizationType = (process.env.NODE_ENV === 'production' && process.env.SERVER_HOST !== process.env.STAGING_URL) ? 'App' : 'Basic'
+    this.upload = new UploadService()
   }
 
   incomingMessage(payload) {
@@ -24,11 +32,13 @@ class ConversationService extends DataService {
     })
   }
 
-  createMessage(conversation, message, isCreated = false) {
-    if (isCreated)
-      return conversation.createMessage(message).then(message => ({message, isCreated, conversation}))
+  async createMessage(conversation, message, isCreated = false) {
+    const messagePayload = await this.additionalMessagePayload(message)
 
-    return conversation.createMessage(message)
+    if (isCreated)
+      return conversation.createMessage(messagePayload).then(message => ({message, isCreated, conversation}))
+
+    return conversation.createMessage(messagePayload)
   }
 
   handleExistingConversation(conversation, message) {
@@ -83,6 +93,13 @@ class ConversationService extends DataService {
       requestPayload,
       {headers: {authorization: `${this.authorizationType} ${process.env.INFOBIP_API_KEY}`}}
     )
+  }
+
+  additionalMessagePayload(message) {
+    if (message.contentType === 'IMAGE' || message.contentType === 'VIDEO') {
+      return this.upload.fetchAndUpload({url: message.imageUrl || message.videoUrl, filename: `${Date.now()}`})
+        .then(uploaded => ({...message, ...addMediaUrls(message, uploaded)}))
+    } else { return message }
   }
 }
 

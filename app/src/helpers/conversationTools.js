@@ -40,3 +40,16 @@ export const constructFreeFormPayload = ({phoneNumber, content, imageUrl, videoU
   ...constructTemplatePayload({phoneNumber}),
   whatsApp: {...mediaObject({imageUrl, videoUrl}), text: content}
 })
+
+export const addMediaUrls = (message, upload) => {
+  switch (message.contentType) {
+    case 'DOCUMENT':
+      return {documentUrl: upload.Location}
+    case 'IMAGE':
+      return {imageUrl: upload.Location}
+    case 'VIDEO':
+      return {videoUrl: upload.Location}
+    default:
+      return {}
+  }
+}
