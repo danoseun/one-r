@@ -32,8 +32,8 @@ class ConversationService extends DataService {
     })
   }
 
-  async createMessage(conversation, message, isCreated = false) {
-    const messagePayload = await this.additionalMessagePayload(message)
+  async createMessage({conversation, message, isCreated = false, incoming = false}) {
+    const messagePayload = await this.additionalMessagePayload(message, incoming)
 
     if (isCreated)
       return conversation.createMessage(messagePayload).then(message => ({message, isCreated, conversation}))
@@ -41,19 +41,19 @@ class ConversationService extends DataService {
       return conversation.createMessage(messagePayload)
   }
 
-  handleExistingConversation(conversation, message) {
+  handleExistingConversation(conversation, message, incoming = false) {
     if (conversation.customer.name) {
-      return this.createMessage(conversation, message)
+      return this.createMessage({conversation, message, incoming})
     } else {
       return conversation.update({customer: {...conversation.customer, name: message.sender.name}})
-        .then(data => this.createMessage(data, message))
+        .then(data => this.createMessage({conversation: data, message, incoming}))
     }
   }
 
-  handleNewConversation(payload, formattedMessage) {
+  handleNewConversation(payload, formattedMessage, incoming = false) {
     return this.channel.show({phone: payload.to}, {}, {[Op.and]: [{type: 'DEFAULT'}]})
       .then(channel => this.addResource({...constructNewConversation(payload), channel_id: channel.id, firm_id: channel.firm_id}))
-      .then(conversation => this.createMessage(conversation, formattedMessage, true))
+      .then(conversation => this.createMessage({conversation, message: formattedMessage, isCreated: true, incoming}))
   }
 
   channelMessage(payload) {
@@ -69,7 +69,7 @@ class ConversationService extends DataService {
         this.conversation = conversation
 
         return this.sendMessageToCustomer(payload.template.infobip, 'template')
-          .then(() => this.createMessage(this.conversation, payload.template.formatted, true))
+          .then(() => this.createMessage({conversation: this.conversation, message: payload.template.formatted, isCreated: true}))
       })
   }
 
@@ -79,7 +79,7 @@ class ConversationService extends DataService {
     const type = payload.template ? 'template' : 'free form'
 
     return this.sendMessageToCustomer(customerMessagePayload, type)
-      .then(() => this.show({id: conversationId}).then(conversation => this.createMessage(conversation, message)))
+      .then(() => this.show({id: conversationId}).then(conversation => this.createMessage({conversation, message})))
 
   }
 
@@ -95,8 +95,8 @@ class ConversationService extends DataService {
     )
   }
 
-  additionalMessagePayload(message) {
-    if (message.contentType === 'IMAGE' || message.contentType === 'VIDEO') {
+  additionalMessagePayload(message, incoming = false) {
+    if (incoming && (message.contentType === 'IMAGE' || message.contentType === 'VIDEO')) {
       return this.upload.fetchAndUpload({url: message.imageUrl || message.videoUrl, filename: `${Date.now()}`})
         .then(uploaded => ({...message, ...addMediaUrls(message, uploaded)}))
     } else { return message }
