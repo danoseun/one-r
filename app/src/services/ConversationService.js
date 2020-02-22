@@ -37,8 +37,8 @@ class ConversationService extends DataService {
 
     if (isCreated)
       return conversation.createMessage(messagePayload).then(message => ({message, isCreated, conversation}))
-
-    return conversation.createMessage(messagePayload)
+    else
+      return conversation.createMessage(messagePayload)
   }
 
   handleExistingConversation(conversation, message) {
