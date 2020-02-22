@@ -26,9 +26,9 @@ class ConversationService extends DataService {
       const newMessage = constructNewMessage(payload)
 
       if (conversation)
-        return this.handleExistingConversation(conversation, newMessage)
+        return this.handleExistingConversation(conversation, newMessage, true)
       else
-        return this.handleNewConversation(payload, newMessage)
+        return this.handleNewConversation(payload, newMessage, true)
     })
   }
 
