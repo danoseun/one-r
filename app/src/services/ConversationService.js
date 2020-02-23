@@ -95,8 +95,10 @@ class ConversationService extends DataService {
     )
   }
 
-  additionalMessagePayload(message, incoming = false) {
-    if (incoming && (message.contentType === 'IMAGE' || message.contentType === 'VIDEO')) {
+  additionalMessagePayload(message, hasMedia = false) {
+    const mediaTypes = ['IMAGE', 'VIDEO', 'DOCUMENT']
+
+    if (hasMedia && mediaTypes.includes(message.contentType)) {
       return this.upload.fetchAndUpload({url: message.imageUrl || message.videoUrl, filename: `${Date.now()}`})
         .then(uploaded => ({...message, ...addMediaUrls(message, uploaded)}))
     } else { return message }
