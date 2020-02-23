@@ -2,10 +2,10 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.addColumn('Messages', 'docUrl', Sequelize.STRING)
+    return queryInterface.addColumn('Messages', 'documentUrl', Sequelize.STRING)
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.removeColumn('Messages', 'docUrl')
+    return queryInterface.removeColumn('Messages', 'documentUrl')
   }
 };
