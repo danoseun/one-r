@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
       default: 'TEXT'
     },
     imageUrl: DataTypes.STRING,
-    videoUrl: DataTypes.STRING
+    videoUrl: DataTypes.STRING,
+    docUrl: DataTypes.STRING
   }, {});
   Message.associate = function(models) {
     // associations can be defined here
