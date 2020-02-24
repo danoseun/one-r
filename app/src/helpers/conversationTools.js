@@ -34,7 +34,7 @@ export const mediaObject = ({imageUrl, videoUrl, documentUrl}) => {
   else if (videoUrl)
     return {videoUrl}
   else if (documentUrl)
-    return {documentUrl}
+    return {fileUrl: documentUrl}
 
   return {}
 }
