@@ -7,7 +7,8 @@ export const constructNewMessage = (message, support = false) => ({
   content: message.message.text || message.message.caption,
   contentType: message.message.type,
   imageUrl: message.message.type === 'IMAGE' ? message.message.url : null,
-  videoUrl: message.message.type === 'VIDEO' ? message.message.url : null
+  videoUrl: message.message.type === 'VIDEO' ? message.message.url : null,
+  documentUrl: message.message.type === 'DOCUMENT' ? message.message.url : null
 })
 
 export const constructTemplatePayload = ({phoneNumber, locale, name, namespace, values}) => ({

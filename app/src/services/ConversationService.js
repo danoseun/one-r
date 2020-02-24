@@ -75,11 +75,16 @@ class ConversationService extends DataService {
 
   replyMessage(payload, conversationId) {
     const message = payload.message || payload.template.formatted
-    const customerMessagePayload = payload.template ? payload.template.infobip : {phoneNumber: payload.phone, ...message}
-    const type = payload.template ? 'template' : 'free form'
+    const {rawData, extension, ...rest} = message
+    return this.upload.uploadRawImage({rawData, extension}).then(uploaded => {
+      const customerMessagePayload = payload.template ?
+        payload.template.infobip : {phoneNumber: payload.phone, ...rest, ...addMediaUrls(message, uploaded)}
 
-    return this.sendMessageToCustomer(customerMessagePayload, type)
-      .then(() => this.show({id: conversationId}).then(conversation => this.createMessage({conversation, message})))
+      const type = payload.template ? 'template' : 'free form'
+
+      return this.sendMessageToCustomer(customerMessagePayload, type)
+        .then(() => this.show({id: conversationId}).then(conversation => this.createMessage({conversation, message: customerMessagePayload})))
+    })
 
   }
 
@@ -99,7 +104,7 @@ class ConversationService extends DataService {
     const mediaTypes = ['IMAGE', 'VIDEO', 'DOCUMENT']
 
     if (hasMedia && mediaTypes.includes(message.contentType)) {
-      return this.upload.fetchAndUpload({url: message.imageUrl || message.videoUrl, filename: `${Date.now()}`})
+      return this.upload.fetchAndUpload({url: message.imageUrl || message.videoUrl || message.documentUrl, filename: `${Date.now()}`})
         .then(uploaded => ({...message, ...addMediaUrls(message, uploaded)}))
     } else { return message }
   }

@@ -1,6 +1,7 @@
 import AWS from 'aws-sdk'
 import axios from 'axios'
 import fileType from 'file-type'
+import mimeType from 'mime-types'
 
 require('dotenv').config()
 
@@ -32,6 +33,15 @@ class UploadService {
 
       return this.upload({Key: `${payload.filename}.${metadata.ext}`, Body: response.data, ContentType: metadata.mime})
     })
+  }
+
+  uploadRawImage({rawData, extension}) {
+    if (rawData) {
+      const mime = mimeType.contentType(extension)
+      const base64 = rawData.split(',')[1]
+
+      return this.upload({Key: `${Date.now()}.${extension}`, Body: Buffer.from(base64, 'base64'), ContentType: mime})
+    }
   }
 }
 
