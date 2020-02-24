@@ -28,18 +28,20 @@ export const constructTemplatePayload = ({phoneNumber, locale, name, namespace, 
   }
 })
 
-export const mediaObject = ({imageUrl, videoUrl}) => {
+export const mediaObject = ({imageUrl, videoUrl, documentUrl}) => {
   if (imageUrl)
     return {imageUrl}
   else if (videoUrl)
     return {videoUrl}
+  else if (documentUrl)
+    return {documentUrl}
 
   return {}
 }
 
-export const constructFreeFormPayload = ({phoneNumber, content, imageUrl, videoUrl}) => ({
+export const constructFreeFormPayload = ({phoneNumber, content, imageUrl, videoUrl, documentUrl}) => ({
   ...constructTemplatePayload({phoneNumber}),
-  whatsApp: {...mediaObject({imageUrl, videoUrl}), text: content}
+  whatsApp: {...mediaObject({imageUrl, videoUrl, documentUrl}), text: content}
 })
 
 export const addMediaUrls = (message, upload) => {
