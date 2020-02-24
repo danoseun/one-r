@@ -4510,6 +4510,11 @@ sequelize-pool@^2.3.0:
   resolved "https://registry.yarnpkg.com/sequelize-pool/-/sequelize-pool-2.3.0.tgz#64f1fe8744228172c474f530604b6133be64993d"
   integrity sha512-Ibz08vnXvkZ8LJTiUOxRcj1Ckdn7qafNZ2t59jYHMX1VIebTAOYefWdRYFt6z6+hy52WGthAHAoLc9hvk3onqA==
 
+sequelize-replace-enum-postgres@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/sequelize-replace-enum-postgres/-/sequelize-replace-enum-postgres-1.5.0.tgz#76a913b8c073c139074145d25c6117303659d159"
+  integrity sha512-Vn9mtBuNeuswqYWW/BTpyg7rHW5NlbFWSWgev+F+ihi5TFpDUGAB4Tj4/7E2D7kLrW/0ZP30f0VQmIhyMarU/Q==
+
 sequelize@^5.21.3:
   version "5.21.3"
   resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-5.21.3.tgz#f8a6fa0245f8995d70849e4da00c2c7c9aa9f569"
