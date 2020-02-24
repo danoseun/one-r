@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     content: DataTypes.TEXT,
     contentType: {
       allowNull: false,
-      type: DataTypes.ENUM('TEXT', 'IMAGE', 'VIDEO'),
+      type: DataTypes.ENUM('TEXT', 'IMAGE', 'VIDEO', 'DOCUMENT'),
       default: 'TEXT'
     },
     imageUrl: DataTypes.STRING,
