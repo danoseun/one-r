@@ -91,8 +91,13 @@ class ConversationService extends DataService {
 
   }
 
-  allConversations(currentUser, options = {}) {
-    return this.paginatedIndex({...options, where: {firm_id: currentUser.firm_id}, include: db.Message, distinct: true})
+  allConversations(currentUser, {limit, offset, phone}) {
+    let query = {firm_id: currentUser.firm_id}
+
+    if (phone)
+      query = {...query, customer: {phone: {[Op.eq]: phone}}}
+
+    return this.paginatedIndex({where: query, include: db.Message, distinct: true, limit, offset})
   }
 
   sendMessageToCustomer(infobipPayload, type) {
