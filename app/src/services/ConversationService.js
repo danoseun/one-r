@@ -91,7 +91,9 @@ class ConversationService extends DataService {
 
   }
 
-  allConversations(currentUser) { return this.index({where: {firm_id: currentUser.firm_id}, include: db.Message}) }
+  allConversations(currentUser, options = {}) {
+    return this.paginatedIndex({...options, where: {firm_id: currentUser.firm_id}, include: db.Message, distinct: true})
+  }
 
   sendMessageToCustomer(infobipPayload, type) {
     const requestPayload = type === 'template' ? constructTemplatePayload(infobipPayload) : constructFreeFormPayload(infobipPayload)

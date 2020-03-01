@@ -67,3 +67,20 @@ export const addBaseUrlToImages = data => ({
   image: `${process.env.CARS_IMAGE_BASE_URL}/${data.image}`,
   images: data.images.map(image => ({images: `${process.env.CARS_IMAGE_BASE_URL}/${image.images}`}))
 })
+
+/**
+ * Returns options for paginating database requests
+ * @param {Number} page - options
+ * @returns {Object}
+ */
+export const pagination = (page = {size: 15, number: 1}) => ({
+  limit: parseInt(page.size), offset: parseInt(page.size) * (parseInt(page.number) - 1)
+})
+
+/**
+ * Returns total number of pages based on records
+ * @param {Number} count - required
+ * @param {Number} size - optional
+ * @returns {Number}
+ */
+export const totalPage = (count, size = 15) => Math.ceil(count / size)

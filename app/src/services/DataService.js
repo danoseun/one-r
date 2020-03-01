@@ -41,6 +41,13 @@ class DataService {
   index(options = {}) { return this.model.findAll(options) }
 
   /**
+   * Paginates fecthing paginated records
+   * @param {Object} options - optional
+   * @returns {Promise}
+   */
+  paginatedIndex(options = {}) { return this.model.findAndCountAll(options) }
+
+  /**
    * Updates database recored of the specified identifier
    * @param {Object} resourceIdentifier - required
    * @param {Object} updateParams - required
