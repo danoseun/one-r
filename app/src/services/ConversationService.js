@@ -73,18 +73,21 @@ class ConversationService extends DataService {
       })
   }
 
-  replyMessage(payload, conversationId) {
+  async replyMessage(payload, conversationId) {
     const message = payload.message || payload.template.formatted
     const {rawData, extension, ...rest} = message
-    return this.upload.uploadRawImage({rawData, extension}).then(uploaded => {
-      const customerMessagePayload = payload.template ?
-        payload.template.infobip : {phoneNumber: payload.phone, ...rest, ...addMediaUrls(message, uploaded)}
+    let uploaded
 
-      const type = payload.template ? 'template' : 'free form'
+    if (rawData)
+      uploaded = await this.upload.uploadRawImage({rawData, extension})
 
-      return this.sendMessageToCustomer(customerMessagePayload, type)
-        .then(() => this.show({id: conversationId}).then(conversation => this.createMessage({conversation, message: customerMessagePayload})))
-    })
+    const customerMessagePayload = payload.template ?
+      payload.template.infobip : {phoneNumber: payload.phone, ...rest, ...addMediaUrls(message, uploaded)}
+
+    const type = payload.template ? 'template' : 'free form'
+
+    return this.sendMessageToCustomer(customerMessagePayload, type)
+      .then(() => this.show({id: conversationId}).then(conversation => this.createMessage({conversation, message: customerMessagePayload})))
 
   }
 
