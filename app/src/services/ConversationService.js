@@ -82,7 +82,7 @@ class ConversationService extends DataService {
       uploaded = await this.upload.uploadRawImage({rawData, extension})
 
     const customerMessagePayload = payload.template ?
-      payload.template.infobip : {phoneNumber: payload.phone, ...rest, ...addMediaUrls(message, uploaded)}
+      payload.template.infobip : {phoneNumber: payload.phone, ...rest, ...(uploaded && addMediaUrls(message, uploaded))}
 
     const type = payload.template ? 'template' : 'free form'
 
