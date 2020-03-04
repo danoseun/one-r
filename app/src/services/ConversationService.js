@@ -35,6 +35,9 @@ class ConversationService extends DataService {
   async createMessage({conversation, message, isCreated = false, incoming = false}) {
     const messagePayload = await this.additionalMessagePayload(message, incoming)
 
+    if (message.content.toLowerCase().includes('c45-info'))
+      this.notifyWebhook({conversationId: conversation.id, phone: conversation.customer.phone, content: message.content})
+
     if (isCreated)
       return conversation.createMessage(messagePayload).then(message => ({message, isCreated, conversation}))
     else
@@ -117,6 +120,17 @@ class ConversationService extends DataService {
       return this.upload.fetchAndUpload({url: message.imageUrl || message.videoUrl || message.documentUrl, filename: `${Date.now()}`})
         .then(uploaded => ({...message, ...addMediaUrls(message, uploaded)}))
     } else { return message }
+  }
+
+  notifyWebhook({conversationId, phone, content}) {
+    // eslint-disable-next-line no-unused-vars
+    const [_, sku, url] = content.split('|').map(word => word.trim())
+
+    axios.post(
+      `${process.env.CARS_API_WEBHOOK_BASE_URL}/index.php?route=api/whatsapp/getImages`,
+      {phone, sku, url, conversationID: conversationId},
+      {headers: {apikey: process.env.CARS_API_KEY}}
+    )
   }
 }
 
