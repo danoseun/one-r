@@ -1,6 +1,7 @@
 import axios from 'axios'
-
 import {Op} from 'sequelize'
+import qs from 'qs'
+
 import DataService from './DataService'
 import db from '../../db/models'
 import {
@@ -128,8 +129,8 @@ class ConversationService extends DataService {
 
     axios.post(
       `${process.env.CARS_API_WEBHOOK_BASE_URL}/index.php?route=api/whatsapp/getImages`,
-      {phone, sku, url, conversationID: conversationId},
-      {headers: {apikey: process.env.CARS_API_KEY}}
+      qs.stringify({phone, sku, url, conversationID: conversationId}),
+      {headers: {apikey: process.env.CARS_API_KEY, 'content-type': 'application/x-www-form-urlencoded'}}
     )
   }
 }
