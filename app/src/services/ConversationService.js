@@ -101,7 +101,7 @@ class ConversationService extends DataService {
     if (phone)
       query = {...query, customer: {phone: {[Op.eq]: phone}}}
 
-    return this.paginatedIndex({where: query, include: db.Message, distinct: true, limit, offset})
+    return this.paginatedIndex({where: query, include: db.Message, distinct: true, limit, offset, order: [['createdAt', 'DESC']]})
   }
 
   sendMessageToCustomer(infobipPayload, type) {
