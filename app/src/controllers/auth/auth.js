@@ -60,7 +60,7 @@ const auth = {
     }
   },
   invite: (req, res) => {
-    Promise.try(() => authentication.inviteUser({...req.body, firm_id: req.decoded.firm_id}))
+    Promise.try(() => authentication.inviteUser({...req.body, firm_id: req.decoded.firm_id}, req.decoded))
       .then(data => res.status(CREATED).send({data, message: 'Agent invited', success: true}))
       .catch(() => res.status(UNPROCESSABLE_ENTITY).send({
         data: null,

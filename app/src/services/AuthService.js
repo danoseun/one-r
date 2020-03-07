@@ -4,6 +4,7 @@ import base64 from 'base64url'
 
 import DataService from './DataService'
 import db from '../../db/models'
+import EmailService from './EmailService'
 import {generateJWTToken} from '../helpers/authTools'
 import {
   tokenPayload,
@@ -16,11 +17,13 @@ import {
   isLoginAllowed,
   secureRandom
 } from '../helpers/tools'
+import agentInvitationMailer from '../mailers/agentInvitationMailer'
 
 require('dotenv').config()
 
 class AuthService {
   constructor() {
+    this.email = new EmailService()
     this.data = new DataService(db.User)
     this.firmConfig = new DataService(db.FirmConfig)
     this.options = {attributes: {exclude: ['password']}}
@@ -64,7 +67,7 @@ class AuthService {
 
         return this.data.create({...user, firm_id: config && config.firm_id}).then(([newUser]) => {
           if (!roleName)
-            this.createTokenAndSendEmail(newUser)
+            this.createTokenAndSendEmail({user: newUser})
 
           return sanitizeUserAttributes(formatRecord(newUser))
         })
@@ -76,11 +79,15 @@ class AuthService {
    * @todo send email after creating token
    * @param {*} user - create user record
    */
-  createTokenAndSendEmail(user) {
+  createTokenAndSendEmail({user, type = 'sign-up', currentUser}) {
     return user.createToken({value: base64(secureRandom(4))}).then(token => {
-      console.log('-'.repeat(80))
-      console.log(token.value)
-      console.log('-'.repeat(80))
+      if (type === 'agent-invitation') {
+        this.email.delay(2000).sendEmail(agentInvitationMailer(currentUser.firstName, user.email, token.value))
+      } else {
+        console.log('-'.repeat(80))
+        console.log(token.value)
+        console.log('-'.repeat(80))
+      }
     })
   }
 
@@ -111,11 +118,11 @@ class AuthService {
 
   confirmUser(user, data = {}) { return user.update({...data, status: 'confirmed'}) }
 
-  async inviteUser(payload) {
+  async inviteUser(payload, currentUser) {
     const userData = await addRoleToUser(payload, 'agent')
 
     return this.data.addResource(userData).then(user => {
-      this.createTokenAndSendEmail(user)
+      this.createTokenAndSendEmail({user, type: 'agent-invitation', currentUser})
 
       return sanitizeUserAttributes(formatRecord(user))
     })

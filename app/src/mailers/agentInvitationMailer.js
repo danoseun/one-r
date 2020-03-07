@@ -4,7 +4,9 @@ const agentIinvitationHtml = (inviterName, token) => (
   `
     <body>
       <p>
-        ${inviterName} has invited you to join the team on Cars45 Whatsapp Support Solution.
+        <strong>${inviterName}</strong> has invited you to join the team on Cars45 Whatsapp Support Solution.
+      </p>
+      <p>
         Join your team to support and engage your customers via Whatsapp.
       </p>
       <a href='${process.env.WEB_HOST}/auth/confirmation/${token}'>Click Here To Join</a>
