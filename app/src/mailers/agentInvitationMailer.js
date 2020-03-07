@@ -23,6 +23,7 @@ const agentInvitationText = (inviterName, token) => (
 const agentInvitationMailer = (inviterName, email, token) => ({
   from: 'whatsapp@cars45.com',
   to: email,
+  subject: `${inviterName} has invited you to work together on Cars45 Whatsapp Support Solution`,
   text: agentInvitationText(inviterName, token),
   html: agentIinvitationHtml(inviterName, token)
 })
