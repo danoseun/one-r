@@ -127,6 +127,26 @@ class AuthService {
       return sanitizeUserAttributes(formatRecord(user))
     })
   }
+
+  resendInvitation({userId, currentUser}) {
+    return this.data.show({id: userId}).then(user => {
+      this.agent = user
+
+      if (isLoginAllowed(formatRecord(user)))
+        throw new Error('User account is already confirmed')
+      else
+        return user.getTokens()
+    }).then(tokens => {
+      const confirmationToken = tokens.find(token => token.type === 'confirmation')
+
+      if (confirmationToken)
+        this.email.delay(2000).sendEmail(agentInvitationMailer(currentUser.firstName, this.agent.email, confirmationToken.value))
+      else
+        this.createTokenAndSendEmail({user: this.agent, type: 'agent-invitation', currentUser})
+
+      return sanitizeUserAttributes(formatRecord(this.agent))
+    })
+  }
 }
 
 export default AuthService

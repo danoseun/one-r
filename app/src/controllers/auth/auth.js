@@ -68,6 +68,11 @@ const auth = {
         success: false
       }))
   },
+  resendInvite: (req, res) => {
+    Promise.try(() => authentication.resendInvitation({userId: req.params.id, currentUser: req.decoded}))
+      .then(data => res.status(OK).send({data, message: 'Agent invite resent', success: true}))
+      .catch(err => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: err.message, success: false}))
+  },
   remove: (req, res) => {
     const data = new FirmService(null, req.decoded)
 

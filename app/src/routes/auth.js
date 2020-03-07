@@ -24,4 +24,7 @@ auth.route('/invite-agents')
 auth.route('/remove-agents/:id')
   .delete(permissions.isManager, authController.remove)
 
+auth.route('/resend-invite/:id')
+  .get(permissions.isManager, authController.resendInvite)
+
 export default auth
