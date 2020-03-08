@@ -12,6 +12,7 @@ import {
   addMediaUrls
 } from '../helpers/conversationTools'
 import UploadService from './UploadService'
+import {dateToISOString} from '../helpers/tools'
 
 class ConversationService extends DataService {
   constructor(model) {
@@ -39,11 +40,17 @@ class ConversationService extends DataService {
     if (message.content.toLowerCase().includes('c45-info'))
       this.notifyWebhook({conversationId: conversation.id, phone: conversation.customer.phone, content: message.content})
 
-    if (isCreated)
+
+    if (isCreated) {
       return conversation.createMessage(messagePayload).then(message => ({message, isCreated, conversation}))
-    else
+    } else {
+      this.updateConversation(conversation)
+
       return conversation.createMessage(messagePayload)
+    }
   }
+
+  updateConversation(conversation) { return conversation.update({updateAt: dateToISOString(Date.now())}) }
 
   handleExistingConversation(conversation, message, incoming = false) {
     if (conversation.customer.name) {
@@ -101,7 +108,14 @@ class ConversationService extends DataService {
     if (phone)
       query = {...query, customer: {phone: {[Op.eq]: phone}}}
 
-    return this.paginatedIndex({where: query, include: db.Message, distinct: true, limit, offset, order: [[db.Message, 'createdAt', 'DESC']]})
+    return this.paginatedIndex({
+      where: query,
+      include: db.Message,
+      distinct: true,
+      limit,
+      offset,
+      order: [['updatedAt', 'DESC']]
+    })
   }
 
   sendMessageToCustomer(infobipPayload, type) {
