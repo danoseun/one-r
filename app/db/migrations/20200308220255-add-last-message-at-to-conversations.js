@@ -8,6 +8,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.removeColumn('Conversations', 'firm_id')
+    return queryInterface.removeColumn('Conversations', 'lastMessageAt')
   }
 };
