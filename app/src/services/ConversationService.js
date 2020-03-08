@@ -12,6 +12,7 @@ import {
   addMediaUrls
 } from '../helpers/conversationTools'
 import UploadService from './UploadService'
+import {dateToISOString} from '../helpers/tools'
 
 class ConversationService extends DataService {
   constructor(model) {
@@ -49,7 +50,7 @@ class ConversationService extends DataService {
     }
   }
 
-  updateConversation(conversation) { return conversation.changed('updatedAt', true) }
+  updateConversation(conversation) { return conversation.update({updatedAt: dateToISOString(Date.now())}) }
 
   handleExistingConversation(conversation, message, incoming = false) {
     if (conversation.customer.name) {
