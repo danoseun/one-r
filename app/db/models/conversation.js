@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4
     },
     customer: DataTypes.JSONB,
-    updatedAt: DataTypes.DATE
+    lastMessageAt: DataTypes.DATE
   }, {});
   Conversation.associate = function(models) {
     // associations can be defined here

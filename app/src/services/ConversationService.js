@@ -50,7 +50,7 @@ class ConversationService extends DataService {
     }
   }
 
-  updateConversation(conversation) { return conversation.update({updatedAt: dateToISOString(Date.now())}) }
+  updateConversation(conversation) { return conversation.update({lastMessageAt: dateToISOString(Date.now())}) }
 
   handleExistingConversation(conversation, message, incoming = false) {
     if (conversation.customer.name) {
@@ -114,7 +114,7 @@ class ConversationService extends DataService {
       distinct: true,
       limit,
       offset,
-      order: [['updatedAt', 'DESC']]
+      order: [['lastMessageAt', 'DESC']]
     })
   }
 
