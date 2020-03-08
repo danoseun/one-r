@@ -84,3 +84,5 @@ export const pagination = (page = {size: 15, number: 1}) => ({
  * @returns {Number}
  */
 export const totalPage = (count, size = 15) => Math.ceil(count / size)
+
+export const passwordResetUserPayload = ({firstName, lastName, email}) => ({firstName, lastName, email})

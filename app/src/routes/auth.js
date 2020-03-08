@@ -27,4 +27,7 @@ auth.route('/remove-agents/:id')
 auth.route('/resend-invite/:id')
   .get(permissions.isManager, authController.resendInvite)
 
+auth.route('/password-reset-request')
+  .post(authController.requestPasswordReset)
+
 export default auth

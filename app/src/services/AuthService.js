@@ -15,9 +15,11 @@ import {
   emailDomain,
   isConfirmationTokenActive,
   isLoginAllowed,
-  secureRandom
+  secureRandom,
+  passwordResetUserPayload
 } from '../helpers/tools'
 import agentInvitationMailer from '../mailers/agentInvitationMailer'
+import passwordResetMailer from '../mailers/passwordResetMailer'
 
 require('dotenv').config()
 
@@ -79,14 +81,20 @@ class AuthService {
    * @todo send email after creating token
    * @param {*} user - create user record
    */
-  createTokenAndSendEmail({user, type = 'sign-up', currentUser}) {
-    return user.createToken({value: base64(secureRandom(4))}).then(token => {
-      if (type === 'agent-invitation') {
-        this.email.delay(2000).sendEmail(agentInvitationMailer(currentUser.firstName, user.email, token.value))
-      } else {
-        console.log('-'.repeat(80))
-        console.log(token.value)
-        console.log('-'.repeat(80))
+  createTokenAndSendEmail({user, type = 'sign-up', currentUser = {}}) {
+    return user.createToken({value: base64(secureRandom(4)), type: type === 'password-reset' ? 'reset' : 'confirmation'}).then(token => {
+      switch(type) {
+        case 'agent-invitation':
+          this.email.delay(2000).sendEmail(agentInvitationMailer(currentUser.firstName, user.email, token.value))
+          break
+        case 'password-reset':
+          this.email.delay(2000).sendEmail(passwordResetMailer(user.email, token.value))
+          break
+        default:
+          console.log('-'.repeat(80))
+          console.log(token.value)
+          console.log('-'.repeat(80))
+          break
       }
     })
   }
@@ -145,6 +153,17 @@ class AuthService {
         this.createTokenAndSendEmail({user: this.agent, type: 'agent-invitation', currentUser})
 
       return sanitizeUserAttributes(formatRecord(this.agent))
+    })
+  }
+
+  requestPasswordReset(email) {
+    return this.data.show({email}).then(user => {
+      if (isLoginAllowed(user))
+        this.createTokenAndSendEmail({user, type: 'password-reset'})
+      else
+        throw new Error('Unable to process request')
+
+      return passwordResetUserPayload(formatRecord(user))
     })
   }
 }

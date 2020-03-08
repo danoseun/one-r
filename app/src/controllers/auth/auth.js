@@ -84,6 +84,11 @@ const auth = {
         else
           res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Uanble to process your request', success: false})
       })
+  },
+  requestPasswordReset: (req, res) => {
+    Promise.try(() => authentication.requestPasswordReset(req.body.email))
+      .then(data => res.status(OK).send({data, message: 'Password reset successful', success: true}))
+      .catch(() => res.status(OK).send({data: req.body, message: 'Password reset successful', success: true}))
   }
 }
 
