@@ -30,4 +30,7 @@ auth.route('/resend-invite/:id')
 auth.route('/password-reset-request')
   .post(authController.requestPasswordReset)
 
+auth.route('/reset-password')
+  .post(authController.resetPassword)
+
 export default auth

@@ -101,9 +101,8 @@ class AuthService {
 
   confirmAccount(payload) {
     const {token, ...rest} = payload
-    const tokenObject = new DataService(db.Token)
 
-    return tokenObject.show({value: token}).then(data => {
+    return this.fetchToken(token).then(data => {
       if (data) {
         if (isConfirmationTokenActive(data)) {
           return data.getUser()
@@ -165,6 +164,27 @@ class AuthService {
 
       return passwordResetUserPayload(formatRecord(user))
     })
+  }
+
+  fetchToken(token) {
+    const tokenObject = new DataService(db.Token)
+
+    return tokenObject.show({value: token})
+  }
+
+  resetPassowrd({token, password}) {
+    return this.fetchToken(token).then(resetToken => {
+      this.resetToken = resetToken
+
+      if (resetToken && isConfirmationTokenActive(resetToken))
+        return resetToken.getUser()
+      else
+        throw new Error('Invalid/expired token')
+    }).then(user => {
+      this.resetToken.destroy()
+
+      return user.update({password})
+    }).then(updatedUser => passwordResetUserPayload(formatRecord(updatedUser)))
   }
 }
 

@@ -87,8 +87,13 @@ const auth = {
   },
   requestPasswordReset: (req, res) => {
     Promise.try(() => authentication.requestPasswordReset(req.body.email))
-      .then(data => res.status(OK).send({data, message: 'Password reset successful', success: true}))
-      .catch(() => res.status(OK).send({data: req.body, message: 'Password reset successful', success: true}))
+      .then(data => res.status(OK).send({data, message: 'Password reset request successful', success: true}))
+      .catch(() => res.status(OK).send({data: req.body, message: 'Password reset request successful', success: true}))
+  },
+  resetPassword: (req, res) => {
+    Promise.try(() => authentication.resetPassowrd(req.body))
+      .then(data => res.status(ACCEPTED).send({data, message: 'Password reset successful', success: true}))
+      .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to reset password', success: false}))
   }
 }
 
