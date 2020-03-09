@@ -56,6 +56,11 @@ const conversations = {
     Promise.try(() => conversation.update(req.params, req.body))
       .then(data => res.status(OK).send({data, message: null, success: true}))
       .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to process request', success: false}))
+  },
+  show: (req, res) => {
+    Promise.try(() => conversation.showConversation(req.params.id))
+      .then(data => res.status(OK).send({data, message: null, success: true}))
+      .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to process request', success: false}))
   }
 }
 

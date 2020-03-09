@@ -147,6 +147,8 @@ class ConversationService extends DataService {
       {headers: {apikey: process.env.CARS_API_KEY, 'content-type': 'application/x-www-form-urlencoded'}}
     )
   }
+
+  showConversation(id) { return this.show({id}, {include: db.Message}) }
 }
 
 export default ConversationService
