@@ -46,7 +46,7 @@ const conversations = {
   reply: (req, res) => {
     Promise.try(() => conversation.replyMessage(req.body, req.params.id))
       .then(data => {
-        if (!req.xhr)
+        if (req.headers.origin !== process.env.WEB_HOST)
           sse.sseSetup.send(data, 'message', Date.now())
 
         res.status(OK).send({data, message: 'Message sent to customer', success: true})
