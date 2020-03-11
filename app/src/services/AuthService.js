@@ -128,11 +128,18 @@ class AuthService {
   async inviteUser(payload, currentUser) {
     const userData = await addRoleToUser(payload, 'agent')
 
-    return this.data.addResource(userData).then(user => {
-      this.createTokenAndSendEmail({user, type: 'agent-invitation', currentUser})
+    return this.data.show({email: userData.email}).then(existingUser => {
+      if (existingUser) {
+        throw new Error('User has already been invited')
+      } else {
+        return this.data.addResource(userData).then(user => {
+          this.createTokenAndSendEmail({user, type: 'agent-invitation', currentUser})
 
-      return sanitizeUserAttributes(formatRecord(user))
+          return sanitizeUserAttributes(formatRecord(user))
+        })
+      }
     })
+
   }
 
   resendInvitation({userId, currentUser}) {
