@@ -18,14 +18,15 @@ export const isEmailValid = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
 export const formatRecord = record => record.get({plain: true})
 
-export const sanitizeUserAttributes = ({id, firstName, email, lastName, firm_id, role_id, status}) => ({
+export const sanitizeUserAttributes = ({id, firstName, email, lastName, firm_id, role_id, status, Role = {}}) => ({
   id,
   firstName,
   email,
   lastName,
   firm_id,
   role_id,
-  status
+  status,
+  roleName: Role.name
 })
 
 export const emailDomain = email => email.split('@')[1]

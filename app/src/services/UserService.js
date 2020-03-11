@@ -13,7 +13,7 @@ class UserService extends DataService {
     if (await isAdmin(this.currentUser.role_id))
       return this.index().then(users => users.map(user => sanitizeUserAttributes(formatRecord(user))))
     else
-      return this.show({id: this.currentUser.id}).then(user => sanitizeUserAttributes(formatRecord(user)))
+      return this.show({id: this.currentUser.id}, {include: db.Role}).then(user => sanitizeUserAttributes(formatRecord(user)))
   }
 }
 

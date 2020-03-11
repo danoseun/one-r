@@ -35,7 +35,7 @@ class AuthService {
     const {email, password} = credentials
 
     if (email) {
-      return this.data.show({email}).then(user => {
+      return this.data.show({email}, {include: db.Role}).then(user => {
         if (user && isLoginAllowed(user)) {
           return bcrypt.compare(password, user.password).then(response => {
             if (response)
