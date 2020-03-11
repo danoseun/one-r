@@ -114,7 +114,7 @@ class ConversationService extends DataService {
       distinct: true,
       limit,
       offset,
-      order: [['lastMessageAt', 'DESC']]
+      order: [['updatedAt', 'DESC']]
     })
   }
 
