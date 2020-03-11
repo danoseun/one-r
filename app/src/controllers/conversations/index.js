@@ -46,8 +46,10 @@ const conversations = {
   reply: (req, res) => {
     Promise.try(() => conversation.replyMessage(req.body, req.params.id))
       .then(data => {
-        if (req.headers.origin !== process.env.WEB_HOST)
-          sse.sseSetup.send(data, 'message', Date.now())
+        const api = req.headers.origin !== process.env.WEB_HOST
+
+        if (api)
+          sse.sseSetup.send({...data, sender: {...data.sender, automated: api}}, 'message', Date.now())
 
         res.status(OK).send({data, message: 'Message sent to customer', success: true})
       }).catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to send message to customer', success: true}))
