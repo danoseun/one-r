@@ -158,6 +158,15 @@ class ConversationService extends DataService {
         return conversation.update({agent_id: currentUser.id, status: 'in-progress'})
     })
   }
+
+  closeConversation({id}) {
+    return this.show({id}).then(conversation => {
+      if (conversation.status === 'open')
+        throw new Error('No agent has attended to this conversations and cannot be closed.')
+      else
+        return conversation.update({status: 'closed'})
+    })
+  }
 }
 
 export default ConversationService

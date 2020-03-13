@@ -3,7 +3,7 @@ import * as Promise from 'bluebird'
 import ConversationService from '../../services/ConversationService'
 import db from '../../../db/models'
 import {formatIncomingMessage} from '../../helpers/conversationTools'
-import {CREATED, UNPROCESSABLE_ENTITY, OK} from '../../constants/statusCodes'
+import {CREATED, UNPROCESSABLE_ENTITY, OK, ACCEPTED} from '../../constants/statusCodes'
 import sse from '../../helpers/serverSentEvent'
 import {pagination, totalPage} from '../../helpers/tools'
 
@@ -67,6 +67,11 @@ const conversations = {
   assign: (req, res) => {
     Promise.try(() => conversation.assignConversation({id: req.params.id, currentUser: req.decoded}))
       .then(data => res.status(OK).send({data, message: 'Conversation assigned to you.', success: true}))
+      .catch(err => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: err.message, success: false}))
+  },
+  close: (req, res) => {
+    Promise.try(() => conversation.closeConversation(req.params))
+      .then(data => res.status(ACCEPTED).send({data, message: 'Conversation successfuly closed.', success: true}))
       .catch(err => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: err.message, success: false}))
   }
 }

@@ -19,6 +19,7 @@ conversations.route('/:id')
   .get(permissions.isAuthenticated, conversationController.show)
   .post(permissions.isAuthenticated, conversationController.reply)
   .patch(permissions.isAuthenticated, conversationController.update)
+  .delete(permissions.isAuthenticated, conversationController.close)
 
 conversations.route('/:id/assign')
   .patch(permissions.isAuthenticated, conversationController.assign)
