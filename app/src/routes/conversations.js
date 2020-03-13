@@ -20,4 +20,7 @@ conversations.route('/:id')
   .post(permissions.isAuthenticated, conversationController.reply)
   .patch(permissions.isAuthenticated, conversationController.update)
 
+conversations.route('/:id/assign')
+  .patch(permissions.isAuthenticated, conversationController.assign)
+
 export default conversations
