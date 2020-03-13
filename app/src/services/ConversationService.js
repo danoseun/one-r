@@ -24,7 +24,7 @@ class ConversationService extends DataService {
   }
 
   incomingMessage(payload) {
-    return this.show({customer: {phone: {[Op.eq]: payload.from}}}).then(conversation => {
+    return this.show({customer: {phone: {[Op.eq]: payload.from}}}, {}, {status: {[Op.in]: ['open', 'in-progress']}}).then(conversation => {
       const newMessage = constructNewMessage(payload)
 
       if (conversation)
