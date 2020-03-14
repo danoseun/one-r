@@ -10,6 +10,7 @@ import auth from './routes/auth'
 import channels from './routes/channels'
 import conversations from './routes/conversations'
 import firms from './routes/firms'
+import stats from './routes/stats'
 import support from './routes/support'
 import users from './routes/users'
 
@@ -57,6 +58,7 @@ app.use('/api/auth', auth)
 app.use('/api/conversations', conversations)
 app.use('/api/channels', channels)
 app.use('/api/firms', firms)
+app.use('/api/stats', stats)
 app.use('/api/users', users)
 
 // Ad-hoc endpoints

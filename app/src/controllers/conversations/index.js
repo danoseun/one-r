@@ -73,6 +73,11 @@ const conversations = {
     Promise.try(() => conversation.closeConversation(req.params))
       .then(data => res.status(ACCEPTED).send({data, message: 'Conversation successfuly closed.', success: true}))
       .catch(err => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: err.message, success: false}))
+  },
+  stats: (req, res) => {
+    Promise.try(() => conversation.stats())
+      .then(data => res.status(OK).send({data, message: null, success: true}))
+      .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to process request', success: false}))
   }
 }
 

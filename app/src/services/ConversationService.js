@@ -167,6 +167,22 @@ class ConversationService extends DataService {
         return conversation.update({status: 'closed'})
     })
   }
+
+  stats() {
+    return this.model.count().then(total => {
+      this.total = total
+
+      return this.model.count({where: {status: 'open'}})
+    }).then(open => {
+      this.open = open
+
+      return this.model.count({where: {status: 'in-progress'}})
+    }).then(inProgress => {
+      this.inProgress = inProgress
+
+      return this.model.count({where: {status: 'closed'}})
+    }).then(closed => ({closed, open: this.open, inProgress: this.inProgress, total: this.total}))
+  }
 }
 
 export default ConversationService
