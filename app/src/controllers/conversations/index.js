@@ -65,7 +65,7 @@ const conversations = {
       .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to process request', success: false}))
   },
   assign: (req, res) => {
-    Promise.try(() => conversation.assignConversation({id: req.params.id, currentUser: req.decoded}))
+    Promise.try(() => conversation.assignConversation({...req.body, id: req.params.id, currentUser: req.decoded}))
       .then(data => res.status(OK).send({data, message: 'Conversation assigned to you.', success: true}))
       .catch(err => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: err.message, success: false}))
   },

@@ -150,12 +150,12 @@ class ConversationService extends DataService {
 
   showConversation(id) { return this.show({id}, {include: db.Message}) }
 
-  assignConversation({id, currentUser}) {
+  assignConversation({id, currentUser, status}) {
     return this.show({id}).then(conversation => {
-      if (conversation.status === 'in-progress')
+      if (conversation.status === 'in-progress' && conversation.agent_id !== currentUser.id)
         throw new Error('Conversation is already assigned to another agent.')
       else
-        return conversation.update({agent_id: currentUser.id, status: 'in-progress'})
+        return conversation.update({agent_id: status ? null : currentUser.id, status: status || 'in-progress'})
     })
   }
 
