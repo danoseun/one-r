@@ -153,7 +153,7 @@ class AuthService {
     }).then(tokens => {
       const confirmationToken = tokens.find(token => token.type === 'confirmation')
 
-      if (confirmationToken)
+      if (confirmationToken && isConfirmationTokenActive(confirmationToken))
         this.email.delay(2000).sendEmail(agentInvitationMailer(currentUser.firstName, this.agent.email, confirmationToken.value))
       else
         this.createTokenAndSendEmail({user: this.agent, type: 'agent-invitation', currentUser})
