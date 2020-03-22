@@ -30,9 +30,9 @@ const conversations = {
       .catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to send message to customer', success: true}))
   },
   index: (req, res) => {
-    const {page, phone} = req.query
+    const {page, phone, ...rest} = req.query
 
-    Promise.try(() => conversation.allConversations(req.decoded, {...pagination(page), phone}))
+    Promise.try(() => conversation.allConversations(req.decoded, {...pagination(page), ...rest, phone}))
       .then(({count, rows}) => res.status(OK).send({
         count,
         data: rows,

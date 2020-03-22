@@ -100,8 +100,8 @@ class ConversationService extends DataService {
 
   }
 
-  allConversations(currentUser, {limit, offset, phone}) {
-    let query = {firm_id: currentUser.firm_id}
+  allConversations(currentUser, {limit, offset, phone, ...rest}) {
+    let query = {...rest, firm_id: currentUser.firm_id}
 
     if (phone)
       query = {...query, customer: {phone: {[Op.eq]: phone}}}
