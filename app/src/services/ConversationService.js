@@ -40,14 +40,12 @@ class ConversationService extends DataService {
     if (message.content.toLowerCase().includes('c45-info'))
       this.notifyWebhook({conversationId: conversation.id, phone: conversation.customer.phone, content: message.content})
 
+    this.updateConversation(conversation)
 
-    if (isCreated) {
+    if (isCreated)
       return conversation.createMessage(messagePayload).then(message => ({message, isCreated, conversation}))
-    } else {
-      this.updateConversation(conversation)
-
+    else
       return conversation.createMessage(messagePayload)
-    }
   }
 
   updateConversation(conversation) { return conversation.update({lastMessageAt: dateToISOString(Date.now())}) }
