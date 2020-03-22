@@ -166,19 +166,19 @@ class ConversationService extends DataService {
     })
   }
 
-  stats() {
-    return this.model.count().then(total => {
+  stats(query) {
+    return this.model.count({where: query}).then(total => {
       this.total = total
 
-      return this.model.count({where: {status: 'open'}})
+      return this.model.count({where: {...query, status: 'open'}})
     }).then(open => {
       this.open = open
 
-      return this.model.count({where: {status: 'in-progress'}})
+      return this.model.count({where: {...query, status: 'in-progress'}})
     }).then(inProgress => {
       this.inProgress = inProgress
 
-      return this.model.count({where: {status: 'closed'}})
+      return this.model.count({where: {...query, status: 'closed'}})
     }).then(closed => ({closed, open: this.open, inProgress: this.inProgress, total: this.total}))
   }
 }
