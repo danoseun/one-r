@@ -100,11 +100,13 @@ class ConversationService extends DataService {
 
   }
 
-  allConversations(currentUser, {limit, offset, phone, ...rest}) {
+  allConversations(currentUser, {limit, offset, phone, date, ...rest}) {
     let query = {...rest, firm_id: currentUser.firm_id}
 
     if (phone)
       query = {...query, customer: {phone: {[Op.eq]: phone}}}
+    else if (date)
+      query = {...query, lastMessageAt: {[Op.gte]: date}}
 
     return this.paginatedIndex({
       where: query,
