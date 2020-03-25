@@ -100,8 +100,12 @@ class ConversationService extends DataService {
 
   }
 
-  allConversations(currentUser, {limit, offset, phone, date, ...rest}) {
+  async allConversations(currentUser, {limit, offset, phone, date, ...rest}) {
     let query = {...rest, firm_id: currentUser.firm_id}
+    const config = await db.UserConfig.findOne({where: {user_id: currentUser.id}})
+
+    if (config)
+      query = {...query, country: config.country}
 
     if (phone)
       query = {...query, customer: {phone: {[Op.eq]: phone}}}
