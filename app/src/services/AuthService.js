@@ -37,6 +37,9 @@ class AuthService {
     if (email) {
       return this.data.show({email}, {include: db.Role}).then(user => {
         if (user && isLoginAllowed(user)) {
+          if (user.Role.name === 'agent')
+            this.createUserConfig(user)
+
           return bcrypt.compare(password, user.password).then(response => {
             if (response)
               return {token: generateJWTToken(tokenPayload(formatRecord(user))), user: sanitizeUserAttributes(formatRecord(user))}
@@ -193,6 +196,15 @@ class AuthService {
 
       return user.update({password})
     }).then(updatedUser => passwordResetUserPayload(formatRecord(updatedUser)))
+  }
+
+  createUserConfig(user) {
+    return user.getUserConfig().then(config => {
+      if (config)
+        return null
+      else
+        return user.createUserConfig()
+    })
   }
 }
 
