@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     })
     User.belongsTo(models.Firm, {foreignKey: 'firm_id'})
     User.hasMany(models.Token, {foreignKey: 'user_id'})
+    User.hasOne(models.UserConfig, {foreignKey: 'user_id'})
     User.hasMany(models.Conversation, {foreignKey: 'agent_id'})
   };
   return User;
