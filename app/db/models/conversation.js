@@ -1,4 +1,6 @@
 'use strict';
+const phoneNumber = require('awesome-phonenumber')
+
 module.exports = (sequelize, DataTypes) => {
   const Conversation = sequelize.define('Conversation', {
     id: {
@@ -11,8 +13,19 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.ENUM('open', 'in-progress', 'closed'),
       defaultValue: 'open'
+    },
+    country: {
+      type: DataTypes.STRING
     }
-  }, {});
+  }, {
+    hooks: {
+      beforeCreate: attributes => {
+        const {phone} = attributes.customer
+        if (phone)
+          attributes.country = phoneNumber(`+${phone}`).getRegionCode()
+      }
+    }
+  });
   Conversation.associate = function(models) {
     // associations can be defined here
     Conversation.belongsTo(models.Channel, {
