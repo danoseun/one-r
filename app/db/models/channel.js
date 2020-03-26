@@ -19,8 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     country: {
       allowNull: false,
-      type: DataTypes.STRING,
-      defaultValue: 'NG'
+      type: DataTypes.STRING
     }
   }, {});
   Channel.associate = function(models) {
