@@ -104,8 +104,8 @@ class ConversationService extends DataService {
     let query = {...rest, firm_id: currentUser.firm_id}
     const config = await db.UserConfig.findOne({where: {user_id: currentUser.id}})
 
-    if (config)
-      query = {...query, country: config.country}
+    if (config && config.subscribedChannels.length)
+      query = {...query, channel_id: {[Op.in]: config.subscribedChannels}}
 
     if (phone)
       query = {...query, customer: {phone: {[Op.eq]: phone}}}
