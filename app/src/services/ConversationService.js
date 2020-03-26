@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {Op} from 'sequelize'
 import qs from 'qs'
+import phoneNumber from 'awesome-phonenumber'
 
 import DataService from './DataService'
 import db from '../../db/models'
@@ -60,7 +61,7 @@ class ConversationService extends DataService {
   }
 
   handleNewConversation(payload, formattedMessage, incoming = false) {
-    return this.channel.show({phone: payload.to}, {}, {[Op.and]: [{type: 'DEFAULT'}]})
+    return this.handleChannel({...payload, receiver: payload.to})
       .then(channel => this.addResource({...constructNewConversation(payload), channel_id: channel.id, firm_id: channel.firm_id}))
       .then(conversation => this.createMessage({conversation, message: formattedMessage, isCreated: true, incoming}))
   }
@@ -186,6 +187,15 @@ class ConversationService extends DataService {
 
       return this.model.count({where: {...query, status: 'closed'}})
     }).then(closed => ({closed, open: this.open, inProgress: this.inProgress, total: this.total}))
+  }
+
+  handleChannel({from, receiver}) {
+    return this.channel.show({country: phoneNumber(`+${from}`).getRegionCode()}).then(countryChannel => {
+      if (countryChannel)
+        return countryChannel
+      else
+        return this.channel.show({phone: receiver}, {}, {type: 'DEFAULT'})
+    })
   }
 }
 
