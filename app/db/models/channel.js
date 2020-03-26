@@ -16,6 +16,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.ENUM('DEFAULT', 'CUSTOM'),
       defaultValue: 'CUSTOM'
+    },
+    country: {
+      allowNull: false,
+      type: DataTypes.STRING,
+      defaultValue: 'NG'
     }
   }, {});
   Channel.associate = function(models) {

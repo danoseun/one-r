@@ -10,6 +10,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.STRING,
       defaultValue: 'NG'
+    },
+    subscribedChannels: {
+      allowNull: false,
+      type: DataTypes.ARRAY(DataTypes.UUID),
+      defaultValue: []
     }
   }, {});
   UserConfig.associate = function(models) {
