@@ -41,10 +41,12 @@ class FirmService extends DataService {
     const agentRole = await db.Role.findOne({where: {name: 'agent'}})
 
     return this.show({id}).then(firm => {
-      if (firm)
-        return firm.getUsers().then(users => this.filterAgents(users, agentRole).map(user => sanitizeUserAttributes(formatRecord(user))))
-      else
+      if (firm) {
+        return firm.getUsers({include: [db.UserConfig]})
+          .then(users => this.filterAgents(users, agentRole).map(user => sanitizeUserAttributes(formatRecord(user))))
+      } else {
         throw new Error('Firm does not exist')
+      }
     })
   }
 }
