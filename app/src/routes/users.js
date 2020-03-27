@@ -9,4 +9,7 @@ const users = express.Router()
 users.route('/')
   .get(permissions.isAuthenticated, usersController.index)
 
+users.route('/:id/user-configs')
+  .patch(permissions.isAuthenticated, usersController.updateUserConfig)
+
 export default users

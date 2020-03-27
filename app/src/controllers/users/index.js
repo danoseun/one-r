@@ -14,6 +14,13 @@ const users = {
         else
           res.status(OK).send({data: [users], message: null, success: true})
       }).catch(() => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: 'Unable to process your request', success: false}))
+  },
+  updateUserConfig: (req, res) => {
+    const data = new UserService({currentUser: req.decoded})
+
+    Promise.try(() => data.updateUserConfig({userId: req.params.id, payload: req.body}))
+      .then(userConfig => res.status(OK).send({data: userConfig, message: 'User config updated successfully', success: true}))
+      .catch(err => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: err.message, success: false}))
   }
 }
 
