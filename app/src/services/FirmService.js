@@ -25,12 +25,13 @@ class FirmService extends DataService {
   }
 
   disableFirmUser({id}) {
-    return db.User.findOne({where: {id, [Op.and]: [{firm_id: this.currentUser.firm_id}]}}).then(firmUser => {
-      if (firmUser)
-        return firmUser.update({status: 'disabled'})
-      else
-        throw new Error('Cannot remove user that are not in your firm.')
-    })
+    return db.User.findOne({where: {id, [Op.and]: [{firm_id: this.currentUser.firm_id}]}, include: [db.UserConfig]})
+      .then(firmUser => {
+        if (firmUser)
+          return firmUser.update({status: 'disabled'})
+        else
+          throw new Error('Cannot remove user that are not in your firm.')
+      })
   }
 
   filterAgents(users, agentRole) {
