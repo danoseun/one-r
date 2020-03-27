@@ -19,7 +19,7 @@ class UserService extends DataService {
   isFirmMember(agent) { return this.currentUser.firm_id === agent.firm_id }
 
   async isAllowedToUpdateUserConfig(agent) {
-    return (await isManager(this.currentUser) && this.isFirmMember(agent)) || this.currentUser.id === agent.id
+    return (await isManager(this.currentUser.role_id) && this.isFirmMember(agent)) || this.currentUser.id === agent.id
   }
 
   updateUserConfig({userId, payload}) {
