@@ -1,6 +1,7 @@
 import * as Promise from 'bluebird'
 
 import UserService from '../../services/UserService'
+import {sanitizeUserAttributes, formatRecord} from '../../helpers/tools'
 import {OK, UNPROCESSABLE_ENTITY} from '../../constants/statusCodes'
 
 const users = {
@@ -20,6 +21,13 @@ const users = {
 
     Promise.try(() => data.updateUserConfig({userId: req.params.id, payload: req.body}))
       .then(userConfig => res.status(OK).send({data: userConfig, message: 'User config updated successfully', success: true}))
+      .catch(err => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: err.message, success: false}))
+  },
+  update: (req, res) => {
+    const data = new UserService({currentUser: req.decoded})
+
+    Promise.try(() => data.updateUser({id: req.params.id, payload: req.body}))
+      .then(user => res.status(OK).send({data: sanitizeUserAttributes(formatRecord(user)), message: 'User data updated', success: true}))
       .catch(err => res.status(UNPROCESSABLE_ENTITY).send({data: null, message: err.message, success: false}))
   }
 }

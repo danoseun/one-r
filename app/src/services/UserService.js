@@ -36,6 +36,15 @@ class UserService extends DataService {
           throw new Error('Unable to update user config.')
       })
   }
+
+  updateUser({id, payload}) {
+    return this.show({id}).then(user => {
+      if (this.isAllowedToUpdateUserConfig(user))
+        return user.update(payload)
+      else
+        throw new Error('Unauthorized action')
+    })
+  }
 }
 
 export default UserService
