@@ -129,7 +129,7 @@ class AuthService {
   confirmUser(user, data = {}) { return user.update({...data, status: 'confirmed'}) }
 
   async inviteUser(payload, currentUser) {
-    const {country, ...userData} = await addRoleToUser(payload, 'agent')
+    const {country, subscribedChannels = [], ...userData} = await addRoleToUser(payload, 'agent')
 
     return this.data.show({email: userData.email}).then(existingUser => {
       if (existingUser) {
@@ -137,7 +137,7 @@ class AuthService {
       } else {
         return this.data.addResource(userData).then(user => {
           this.createTokenAndSendEmail({user, type: 'agent-invitation', currentUser})
-          user.createUserConfig({country})
+          user.createUserConfig({country, subscribedChannels})
 
           return sanitizeUserAttributes(formatRecord(user))
         })
