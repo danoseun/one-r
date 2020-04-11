@@ -38,7 +38,7 @@ class ConversationService extends DataService {
   async createMessage({conversation, message, isCreated = false, incoming = false}) {
     const messagePayload = await this.additionalMessagePayload(message, incoming)
 
-    if (message.content.toLowerCase().includes('c45-info'))
+    if (message.content && message.content.toLowerCase().includes('c45-info'))
       this.notifyWebhook({conversationId: conversation.id, phone: conversation.customer.phone, content: message.content})
 
     this.updateConversation(conversation)
