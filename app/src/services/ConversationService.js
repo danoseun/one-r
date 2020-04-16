@@ -95,9 +95,10 @@ class ConversationService extends DataService {
       payload.template.infobip : {phoneNumber: payload.phone, ...rest, ...(uploaded && addMediaUrls(message, uploaded))}
 
     const type = payload.template ? 'template' : 'free form'
+    const formattedMessage = payload.template ? message : customerMessagePayload
 
     return this.sendMessageToCustomer(customerMessagePayload, type)
-      .then(() => this.show({id: conversationId}).then(conversation => this.createMessage({conversation, message: customerMessagePayload})))
+      .then(() => this.show({id: conversationId}).then(conversation => this.createMessage({conversation, message: formattedMessage})))
 
   }
 
