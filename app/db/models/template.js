@@ -14,10 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.STRING
     },
-    namespace: {
-      allowNull: false,
-      type: DataTypes.STRING
-    },
+    namespace: DataTypes.STRING,
     data: {
       allowNull: false,
       type: DataTypes.ARRAY(DataTypes.STRING)
