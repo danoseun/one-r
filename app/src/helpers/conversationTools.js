@@ -11,7 +11,7 @@ export const constructNewMessage = (message, support = false) => ({
   documentUrl: message.message.type === 'DOCUMENT' ? message.message.url : null
 })
 
-export const constructTemplatePayload = ({phoneNumber, locale, name, namespace, values}) => ({
+export const constructTemplatePayload = ({phoneNumber, locale, name, values}) => ({
   scenarioKey: process.env.INFOBIP_SCENARIO_KEY,
   destinations: [
     {
@@ -22,7 +22,6 @@ export const constructTemplatePayload = ({phoneNumber, locale, name, namespace, 
   ],
   whatsApp: {
     templateName: name,
-    templateNamespace: namespace,
     templateData: values,
     language: locale
   }
