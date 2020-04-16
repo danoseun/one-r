@@ -8,7 +8,7 @@ const template = {
     const data = templateData(req.decoded)
 
     Promise.try(() => data.addTemplate(req.body))
-      .then(newTemplate => res.status(CREATED).send({data: newTemplate, message: null, success: true}))
+      .then(([newTemplate]) => res.status(CREATED).send({data: newTemplate, message: null, success: true}))
       .catch(() => res.status(UNPROCESSABLE_ENTITY).send({
         data: null,
         message: 'Unable to complete your request at the moment, please confirm that you do not have missing required fields.',
