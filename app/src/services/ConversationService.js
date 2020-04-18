@@ -68,14 +68,24 @@ class ConversationService extends DataService {
 
   channelMessage(payload) {
     return this.channel.show({phone: payload.from})
-      .then(channel => this.addResource({
-        customer: {
-          phone: payload.template.infobip.phoneNumber,
-          lastActivity: (new Date(Date.now()).toISOString())
-        },
-        channel_id: channel.id,
-        firm_id: channel.firm_id
-      })).then(conversation => {
+      .then(channel => {
+        this.conversationChannel = channel
+
+        return this.show({customer: {phone: {[Op.eq]: payload.template.infobip.phoneNumber}}}, {}, {status: {[Op.in]: ['open', 'in-progress']}})
+      }).then(conversation => {
+        if (conversation) {
+          return conversation
+        } else {
+          return this.addResource({
+            customer: {
+              phone: payload.template.infobip.phoneNumber,
+              lastActivity: (new Date(Date.now()).toISOString())
+            },
+            channel_id: this.conversationChannel.id,
+            firm_id: this.conversationChannel.firm_id
+          })
+        }
+      }).then(conversation => {
         this.conversation = conversation
 
         return this.sendMessageToCustomer(payload.template.infobip, 'template')
@@ -99,7 +109,6 @@ class ConversationService extends DataService {
 
     return this.sendMessageToCustomer(customerMessagePayload, type)
       .then(() => this.show({id: conversationId}).then(conversation => this.createMessage({conversation, message: formattedMessage})))
-
   }
 
   async allConversations(currentUser, {limit, offset, phone, date, ...rest}) {
