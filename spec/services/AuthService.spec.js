@@ -57,4 +57,23 @@ describe('AuthService', () => {
       })
     })
   })
+
+  describe('confirmAccount', () => {
+    let userToken
+
+    before(done => {
+      authentication.data.show({email: validUser.email})
+        .then(user => user.getTokens())
+        .then(tokens => {
+          userToken = tokens[0].value
+
+          done()
+        })
+    })
+
+    context('with valid confirmation token', () => {
+      it('confirms user account correctly', () => {
+      })
+    })
+  })
 })
