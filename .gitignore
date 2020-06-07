@@ -6,3 +6,7 @@ node_modules/*
 
 # Project build
 build/
+
+# Editors
+.DS_Store
+.idea/
