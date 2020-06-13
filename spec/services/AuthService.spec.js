@@ -1,9 +1,10 @@
+/* eslint-disable no-unused-expressions */
 import {expect} from 'chai'
 
 import AuthService from '../../app/src/services/AuthService'
 import db from '../../app/db/models'
 import dataGenerator from '../support/records'
-import {emailDomain} from '../../app/src/helpers/tools'
+import {emailDomain, dateToISOString} from '../../app/src/helpers/tools'
 
 // initialized class
 const authentication = new AuthService()
@@ -17,6 +18,7 @@ const validUser = dataGenerator(['email', 'firstName', 'lastName', 'password'])
 const inValidUser = dataGenerator(['firstName', 'lastName', 'password'])
 const firm = dataGenerator(['name'])
 const firmConfig = {domain: emailDomain(validUser.email)}
+const expiredTokenUser = {...validUser, email: `jane@${emailDomain(validUser.email)}`}
 
 describe('AuthService', () => {
   before(done => {
@@ -72,7 +74,51 @@ describe('AuthService', () => {
     })
 
     context('with valid confirmation token', () => {
-      it('confirms user account correctly', () => {
+      it('confirms user account correctly', done => {
+        authentication.confirmAccount({token: userToken})
+          .then(({token, user}) => {
+            expect(token).to.exist
+            expect(user.status).to.equal('confirmed')
+
+            done()
+          }).catch(err => expect(err).to.not.exist)
+      })
+    })
+
+    context('with invalid token', () => {
+      it('throws an error', done => {
+        authentication.confirmAccount({token: '2v45yt77'})
+          .then(({user}) => expect(user).to.not.exist)
+          .catch(err => {
+            expect(err.message).to.equal('Invalid token.')
+
+            done()
+          })
+      })
+    })
+
+    context('with expired token', () => {
+      let expiredToken
+
+      before(done => {
+        authentication.signUp(expiredTokenUser)
+          .then(() => authentication.data.show({email: expiredTokenUser.email}))
+          .then(user => user.getTokens())
+          .then(tokens => {
+            expiredToken = tokens[0].value
+
+            return db.sequelize.query(`UPDATE "Tokens" SET "createdAt" = '${dateToISOString(1330688329321)}' WHERE "value" = '${expiredToken}'`)
+          }).then(() => done())
+      })
+
+      it('throws an error', done => {
+        authentication.confirmAccount({token: expiredToken})
+          .then(({user}) => expect(user).to.not.exist)
+          .catch(err => {
+            expect(err.message).to.equal('Expired token.')
+
+            done()
+          })
       })
     })
   })
