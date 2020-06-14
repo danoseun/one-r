@@ -34,7 +34,7 @@ export const emailDomain = email => email.split('@')[1]
 
 /**
  * Checks that token was created with 24 hours during account confirmation
- * @param {String} createdAt - required
+ * @param {Date} createdAt - required
  * @returns {Boolean}
  */
 export const isConfirmationTokenActive = ({createdAt}) => {
@@ -72,8 +72,8 @@ export const addBaseUrlToImages = data => ({
 
 /**
  * Returns options for paginating database requests
- * @param {Object} page - options
- * @returns {Object}
+ * @param {{size: Number, number: Number}} page - options
+ * @returns {{limit: Number, offset: Number}}
  */
 export const pagination = (page = {size: 15, number: 1}) => ({
   limit: parseInt(page.size), offset: parseInt(page.size) * (parseInt(page.number) - 1)
