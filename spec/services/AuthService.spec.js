@@ -20,6 +20,8 @@ const firm = dataGenerator(['name'])
 const firmConfig = {domain: emailDomain(validUser.email)}
 const expiredTokenUser = {...validUser, email: `jane@${emailDomain(validUser.email)}`}
 
+let expiredToken
+
 describe('AuthService', () => {
   before(done => {
     Role.create({name: 'manager'})
@@ -98,7 +100,6 @@ describe('AuthService', () => {
     })
 
     context('with expired token', () => {
-      let expiredToken
 
       before(done => {
         authentication.signUp(expiredTokenUser)
@@ -119,6 +120,107 @@ describe('AuthService', () => {
 
             done()
           })
+      })
+    })
+  })
+
+  describe('signIn', () => {
+    context('with valid signIn details', () => {
+      it('signs a confirmed user in correctly', async () => {
+        const credentials = {email:validUser.email, password:validUser.password}
+        const user = await authentication.signIn(credentials)
+        expect(user).to.have.property('token')
+        expect(user).to.have.property('user')
+      })
+    })
+
+    context('with inValid signIn details', () => {
+      it('does not sign in a user with incorrect signin details', async () => {
+        const credentials = {email:validUser.email, password:'quexPa234@'}
+        const err = 'Email and/or password is incorrect.'
+        try {
+          await authentication.signIn(credentials)
+        }
+        catch(error){
+          expect(error.message).to.equal(err)
+        }
+      })
+
+      it('does not sign in a user without email', async () => {
+        const credentials = {email:'', password:'password'}
+        const err = 'Cannot login without email.'
+        try {
+          await authentication.signIn(credentials)
+        }
+        catch(error){
+          expect(error.message).to.equal(err)
+        }
+      })
+    })
+  })
+
+  describe('createUserConfig', () => {
+
+    let user
+    before(done => {
+      authentication.data.show({email: validUser.email})
+        .then(fetchedUser => {
+          user = fetchedUser
+
+          done()
+        })
+    })
+
+    context('with no user config', () => {
+      it('returns null', done => {
+        authentication.createUserConfig(user)
+          .then(config => {
+            expect(config).to.exist
+            expect(config.user_id).to.equal(user.id)
+
+            done()
+          }).catch(err => expect(err).to.not.exist)
+      })
+    })
+
+    context('with existing user config', () => {
+      before(done => {
+        user.getUserConfig().then(config => {
+          if(!config)
+            return user.createUserConfig()
+          return null
+        }).then(() => done())
+      })
+
+      it('return null', done => {
+        authentication.createUserConfig(user)
+          .then(config => {
+            expect(config).to.not.exist
+            done()
+          }).catch(err => expect(err).to.not.exist)
+      })
+    })
+  })
+
+  describe('confirmUser', () => {
+
+    let result
+
+    before(done => {
+      authentication.data.show({email: validUser.email})
+        .then(user => {
+          result = user
+          done()
+        })
+    })
+
+
+    context('with existing user details', () => {
+      it('should change the status of an existing user to confirmed', done => {
+        authentication.confirmUser(result).then(user => {
+          expect(user.status).to.equal('confirmed')
+          done()
+        }).catch(error => expect(error).to.not.exist)
       })
     })
   })
