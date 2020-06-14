@@ -72,7 +72,7 @@ export const addBaseUrlToImages = data => ({
 
 /**
  * Returns options for paginating database requests
- * @param {Number} page - options
+ * @param {Object} page - options
  * @returns {Object}
  */
 export const pagination = (page = {size: 15, number: 1}) => ({

@@ -126,42 +126,46 @@ describe('AuthService', () => {
 
   describe('signIn', () => {
     context('with valid signIn details', () => {
-      it('signs a confirmed user in correctly', async () => {
-        const credentials = {email:validUser.email, password:validUser.password}
-        const user = await authentication.signIn(credentials)
-        expect(user).to.have.property('token')
-        expect(user).to.have.property('user')
+      it('signs a confirmed user in correctly', done => {
+        authentication.signIn(validUser).then(({token, user}) => {
+          expect(user.email).to.equal(validUser.email)
+          expect(token).to.exist
+
+          done()
+        }).catch(err => expect(err).to.not.exist)
       })
     })
 
     context('with inValid signIn details', () => {
-      it('does not sign in a user with incorrect signin details', async () => {
-        const credentials = {email:validUser.email, password:'quexPa234@'}
-        const err = 'Email and/or password is incorrect.'
-        try {
-          await authentication.signIn(credentials)
-        }
-        catch(error){
-          expect(error.message).to.equal(err)
-        }
+      it('does not sign in a user with incorrect signin details', done => {
+        authentication.signIn({...validUser, password: 'quexPa234@'})
+          .then(data => expect(data).to.not.exist)
+          .catch(err => {
+            expect(err.message).to.equal('Email and/or password is incorrect.')
+
+            done()
+          })
       })
 
-      it('does not sign in a user without email', async () => {
-        const credentials = {email:'', password:'password'}
-        const err = 'Cannot login without email.'
-        try {
-          await authentication.signIn(credentials)
-        }
-        catch(error){
-          expect(error.message).to.equal(err)
-        }
+      it('does not sign in a user without email', () => {
+        expect(() => authentication.signIn(inValidUser)).to.throw('Cannot login without email.')
+      })
+
+      it('throws an error when user is unconfirmed', done => {
+        authentication.signIn(expiredTokenUser)
+          .then(data => expect(data).to.not.exist)
+          .catch(err => {
+            expect(err.message).to.equal('Email and/or password is incorrect.')
+
+            done()
+          })
       })
     })
   })
 
   describe('createUserConfig', () => {
-
     let user
+
     before(done => {
       authentication.data.show({email: validUser.email})
         .then(fetchedUser => {
@@ -203,7 +207,6 @@ describe('AuthService', () => {
   })
 
   describe('confirmUser', () => {
-
     let result
 
     before(done => {
