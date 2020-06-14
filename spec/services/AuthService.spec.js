@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import {expect} from 'chai'
+import sinon from 'sinon'
 
 import AuthService from '../../app/src/services/AuthService'
 import db from '../../app/db/models'
@@ -20,7 +21,16 @@ const firm = dataGenerator(['name'])
 const firmConfig = {domain: emailDomain(validUser.email)}
 const expiredTokenUser = {...validUser, email: `jane@${emailDomain(validUser.email)}`}
 
+// Stubbing methods
+let emailMessageObject
+const emailStub = sinon.stub(authentication.email, 'delay').callsFake(() => ({sendEmail: message => {
+  emailMessageObject = message
+
+  return message
+}}))
+
 let expiredToken
+let userRecord
 
 describe('AuthService', () => {
   before(done => {
@@ -31,6 +41,8 @@ describe('AuthService', () => {
   })
 
   after(() => Role.sequelize.sync({force: true}))
+
+  afterEach(() => emailStub.resetHistory())
 
   describe('signUp', () => {
     context('with valid user signup', () => {
@@ -164,12 +176,10 @@ describe('AuthService', () => {
   })
 
   describe('createUserConfig', () => {
-    let user
-
     before(done => {
       authentication.data.show({email: validUser.email})
         .then(fetchedUser => {
-          user = fetchedUser
+          userRecord = fetchedUser
 
           done()
         })
@@ -177,10 +187,10 @@ describe('AuthService', () => {
 
     context('with no user config', () => {
       it('returns null', done => {
-        authentication.createUserConfig(user)
+        authentication.createUserConfig(userRecord)
           .then(config => {
             expect(config).to.exist
-            expect(config.user_id).to.equal(user.id)
+            expect(config.user_id).to.equal(userRecord.id)
 
             done()
           }).catch(err => expect(err).to.not.exist)
@@ -189,15 +199,15 @@ describe('AuthService', () => {
 
     context('with existing user config', () => {
       before(done => {
-        user.getUserConfig().then(config => {
+        userRecord.getUserConfig().then(config => {
           if(!config)
-            return user.createUserConfig()
+            return userRecord.createUserConfig()
           return null
         }).then(() => done())
       })
 
       it('return null', done => {
-        authentication.createUserConfig(user)
+        authentication.createUserConfig(userRecord)
           .then(config => {
             expect(config).to.not.exist
             done()
@@ -207,21 +217,12 @@ describe('AuthService', () => {
   })
 
   describe('confirmUser', () => {
-    let result
-
-    before(done => {
-      authentication.data.show({email: validUser.email})
-        .then(user => {
-          result = user
-          done()
-        })
-    })
-
-
     context('with existing user details', () => {
       it('should change the status of an existing user to confirmed', done => {
-        authentication.confirmUser(result).then(user => {
+        authentication.confirmUser(userRecord, {lastName: 'Doe'}).then(user => {
           expect(user.status).to.equal('confirmed')
+          expect(user.lastName).to.equal('Doe')
+
           done()
         }).catch(error => expect(error).to.not.exist)
       })
@@ -259,6 +260,45 @@ describe('AuthService', () => {
 
             done()
           })
+      })
+    })
+  })
+
+  describe('createTokenAndSendEmail', () => {
+    context('password reset', () => {
+      it('creates token and attempts to send email', done => {
+        authentication.createTokenAndSendEmail({user: userRecord, type: 'password-reset'})
+          .then(() => {
+            expect(emailStub.called).to.equal(true)
+            expect(emailMessageObject.subject).to.equal('Cars45 Whatsapp Support Solution Account Recovery Instructions')
+
+            done()
+          }).catch(err => expect(err).to.not.exist)
+      })
+    })
+
+    context('agent invitation', () => {
+      it('creates token and attempts to send email', done => {
+        authentication.createTokenAndSendEmail({user: userRecord, type: 'agent-invitation', currentUser: expiredTokenUser})
+          .then(() => {
+            expect(emailStub.called).to.equal(true)
+            expect(
+              emailMessageObject.subject
+            ).to.equal(`${expiredTokenUser.firstName} has invited you to work together on Cars45 Whatsapp Support Solution`)
+
+            done()
+          }).catch(err => expect(err).to.not.exist)
+      })
+    })
+
+    context('sign up', () => {
+      it('creates token but does not attempt to send email', done => {
+        authentication.createTokenAndSendEmail({user: userRecord})
+          .then(() => {
+            expect(emailStub.called).to.equal(false)
+
+            done()
+          }).catch(err => expect(err).to.not.exist)
       })
     })
   })
