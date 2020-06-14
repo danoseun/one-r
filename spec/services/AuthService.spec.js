@@ -227,4 +227,39 @@ describe('AuthService', () => {
       })
     })
   })
+
+  describe('requestPasswordReset', () => {
+    context('with valid user', () => {
+      it('initiates user password reset', done => {
+        authentication.requestPasswordReset(validUser.email)
+          .then(data => {
+            expect(data.firstName).to.equal(validUser.firstName)
+
+            done()
+          }).catch(err => expect(err).to.not.exist)
+      })
+    })
+
+    context('with invalid user', () => {
+      it('throws an error for unconfirmed', done => {
+        authentication.requestPasswordReset(expiredTokenUser.email)
+          .then(data => expect(data).to.not.exist)
+          .catch(err => {
+            expect(err.message).to.equal('Unable to process request')
+
+            done()
+          })
+      })
+
+      it('throws and error for non-existent user', done => {
+        authentication.requestPasswordReset('james@doe.com')
+          .then(data => expect(data).to.not.exist)
+          .catch(err => {
+            expect(err.message).to.equal("Cannot read property 'status' of null")
+
+            done()
+          })
+      })
+    })
+  })
 })
