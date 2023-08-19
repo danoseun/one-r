@@ -22,6 +22,17 @@ class UserService extends DataService {
     return (await isManager(this.currentUser.role_id) && this.isFirmMember(agent)) || this.currentUser.id === agent.id
   }
 
+  // async updateUserConfig({userId, payload}) {
+  //   const user = await this.show({ id: userId })
+  //   this.user = user
+  //   const userConfig = user.getUserConfig()
+  //   if (userConfig && await this.isAllowedToUpdateUserConfig(formatRecord(this.user)))
+  //     return userConfig.update(payload)
+
+  //   else
+  //     throw new Error('Unable to update user config.')
+  // }
+
   updateUserConfig({userId, payload}) {
     return this.show({id: userId})
       .then(user => {
@@ -37,13 +48,13 @@ class UserService extends DataService {
       })
   }
 
-  updateUser({id, payload}) {
-    return this.show({id}).then(user => {
-      if (this.isAllowedToUpdateUserConfig(user))
-        return user.update(payload)
-      else
-        throw new Error('Unauthorized action')
-    })
+  async updateUser({id, payload}) {
+    const user = await this.show({ id })
+    if (this.isAllowedToUpdateUserConfig(user))
+      return user.update(payload)
+
+    else
+      throw new Error('Unauthorized action')
   }
 }
 

@@ -166,16 +166,26 @@ class AuthService {
     })
   }
 
-  requestPasswordReset(email) {
-    return this.data.show({email}).then(user => {
-      if (isLoginAllowed(user))
-        this.createTokenAndSendEmail({user, type: 'password-reset'})
-      else
-        throw new Error('Unable to process request')
+  async requestPasswordReset(email) {
+    const user = await this.data.show({ email })
+    if (isLoginAllowed(user))
+      this.createTokenAndSendEmail({ user, type: 'password-reset' })
 
-      return passwordResetUserPayload(formatRecord(user))
-    })
+    else
+      throw new Error('Unable to process request')
+    return passwordResetUserPayload(formatRecord(user))
   }
+  
+  // requestPasswordReset(email) {
+  //   return this.data.show({email}).then(user => {
+  //     if (isLoginAllowed(user))
+  //       this.createTokenAndSendEmail({user, type: 'password-reset'})
+  //     else
+  //       throw new Error('Unable to process request')
+
+  //     return passwordResetUserPayload(formatRecord(user))
+  //   })
+  // }
 
   fetchToken(token) {
     const tokenObject = new DataService(db.Token)

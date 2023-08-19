@@ -264,6 +264,21 @@ describe('AuthService', () => {
     })
   })
 
+  describe('resetPassowrd', () => {
+    let resetPasswordToken
+
+    before(done => {
+      authentication.data.show({email: validUser.email})
+        .then(user => user.getTokens())
+        .then(tokens => {
+          resetPasswordToken = tokens[0].value
+          console.log('HERE', resetPasswordToken)
+          done()
+        })
+    })
+
+  })
+
   describe('createTokenAndSendEmail', () => {
     context('password reset', () => {
       it('creates token and attempts to send email', done => {
